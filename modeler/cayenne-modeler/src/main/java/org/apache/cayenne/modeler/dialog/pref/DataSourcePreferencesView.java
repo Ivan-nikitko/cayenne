@@ -19,20 +19,18 @@
 
 package org.apache.cayenne.modeler.dialog.pref;
 
-import java.awt.BorderLayout;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
+import org.apache.cayenne.modeler.util.CayenneController;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-import org.apache.cayenne.modeler.util.CayenneController;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import java.awt.BorderLayout;
 
 /**
+ *
  */
 public class DataSourcePreferencesView extends JPanel {
 
@@ -52,22 +50,22 @@ public class DataSourcePreferencesView extends JPanel {
         this.dataSourceEditor = new DBConnectionInfoEditor(controller);
 
         // assemble
-        CellConstraints cc = new CellConstraints();
-        PanelBuilder builder = new PanelBuilder(new FormLayout(
-                "fill:min(150dlu;pref)",
-                "p, 3dlu, p, 10dlu, p, 3dlu, p, 3dlu, p, 10dlu, p"));
-        builder.setDefaultDialogBorder();
 
-        builder.add(new JLabel("Select DataSource"), cc.xy(1, 1));
-        builder.add(dataSources, cc.xy(1, 3));
-        builder.add(addDataSource, cc.xy(1, 5));
-        builder.add(duplicateDataSource, cc.xy(1, 7));
-        builder.add(removeDataSource, cc.xy(1, 9));
-        builder.add(testDataSource, cc.xy(1, 11));
+        JPanel panel = FormBuilder.create()
+                .columns("fill:min(150dlu;pref)")
+                .rows("p, 3dlu, p, 10dlu, p, 3dlu, p, 3dlu, p, 10dlu, p")
+                .add(new JLabel("Select DataSource")).xy(1, 1)
+                .add(dataSources).xy(1, 3)
+                .add(addDataSource).xy(1, 5)
+                .add(duplicateDataSource).xy(1, 7)
+                .add(removeDataSource).xy(1, 9)
+                .add(testDataSource).xy(1, 11)
+                .padding(Paddings.DIALOG)
+                .build();
 
         setLayout(new BorderLayout());
         add(dataSourceEditor.getView(), BorderLayout.CENTER);
-        add(builder.getPanel(), BorderLayout.EAST);
+        add(panel, BorderLayout.EAST);
     }
 
     public DBConnectionInfoEditor getDataSourceEditor() {

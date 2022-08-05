@@ -19,26 +19,25 @@
 
 package org.apache.cayenne.modeler.editor.dbentity;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.util.Collection;
-
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JList;
-import javax.swing.MutableComboBoxModel;
-import javax.swing.plaf.basic.BasicComboBoxRenderer;
-
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.modeler.ProjectController;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.MutableComboBoxModel;
+import javax.swing.plaf.basic.BasicComboBoxRenderer;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.Collection;
 
 public class PKDBGeneratorPanel extends PKGeneratorPanel {
 
@@ -55,14 +54,18 @@ public class PKDBGeneratorPanel extends PKGeneratorPanel {
         attributes.setEditable(false);
         attributes.setRenderer(new AttributeRenderer());
 
-        DefaultFormBuilder builder = new DefaultFormBuilder(new FormLayout(
-                "right:70dlu, 3dlu, fill:200dlu",
-                ""));
-        builder.setDefaultDialogBorder();
-        builder.append("Auto Incremented:", attributes);
-
         setLayout(new BorderLayout());
-        add(builder.getPanel(), BorderLayout.CENTER);
+        add(getPanel(), BorderLayout.CENTER);
+    }
+
+    private JPanel getPanel() {
+        return FormBuilder.create()
+                .columns("right:90dlu, 3dlu, fill:200dlu")
+                .rows("p, 3dlu")
+                .add("Auto Incremented:").xy(1, 1)
+                .add(attributes).xy(3, 1)
+                .padding(Paddings.DIALOG)
+                .build();
     }
 
     public void setDbEntity(DbEntity entity) {

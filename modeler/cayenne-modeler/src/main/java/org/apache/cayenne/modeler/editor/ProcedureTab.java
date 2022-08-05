@@ -26,6 +26,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.ProcedureEvent;
 import org.apache.cayenne.map.Procedure;
@@ -96,19 +98,27 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
         this.returnsValue = new JCayenneCheckBox();
         this.returnsValue.setToolTipText("first parameter will be used as return value");
 
-        FormLayout layout = new FormLayout("right:pref, 3dlu, fill:200dlu", "");
-        DefaultFormBuilder builder = new DefaultFormBuilder(layout);
-        builder.setDefaultDialogBorder();
-
-        builder.appendSeparator("Stored Procedure Configuration");
-        builder.append("Procedure Name:", name.getComponent());
-        builder.append("Catalog:", catalog.getComponent());
-        builder.append("Schema:", schema.getComponent());
-        builder.append("Returns Value:", returnsValue);
-        builder.append("Comment:", comment.getComponent());
-
         this.setLayout(new BorderLayout());
-        this.add(builder.getPanel(), BorderLayout.CENTER);
+        this.add(getPanel(), BorderLayout.CENTER);
+    }
+
+    private JPanel getPanel() {
+        return FormBuilder.create()
+                .columns("right:pref, 3dlu, fill:200dlu")
+                .rows("8*(p, 3dlu)")
+                .addSeparator("Stored Procedure Configuration").xyw(1, 1, 3)
+                .add("Procedure Name:").xy(1, 3)
+                .add(name.getComponent()).xy(3, 3)
+                .add("Catalog:").xy(1, 5)
+                .add(catalog.getComponent()).xy(3, 5)
+                .add("Schema:").xy(1, 7)
+                .add(schema.getComponent()).xy(3, 7)
+                .add("Returns Value:").xy(1, 9)
+                .add(returnsValue).xy(3, 9)
+                .add("Comment:").xy(1, 11)
+                .add(comment.getComponent()).xy(3, 11)
+                .padding(Paddings.DIALOG)
+                .build();
     }
 
     private void initController() {

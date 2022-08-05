@@ -19,6 +19,8 @@
 package org.apache.cayenne.modeler.editor;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ProjectController;
@@ -56,24 +58,28 @@ public class GeneratorsTab extends JPanel {
     public void initView() {
         removeAll();
         additionalTabController.createPanels();
-        FormLayout layout = new FormLayout(
-                "left:pref, 4dlu", "");
-        DefaultFormBuilder builder = new DefaultFormBuilder(layout);
-        builder.setDefaultDialogBorder();
-        ConcurrentMap<DataMap, GeneratorsPanel> panels = additionalTabController.getGeneratorsPanels();
 
+
+        ConcurrentMap<DataMap, GeneratorsPanel> panels = additionalTabController.getGeneratorsPanels();
         if(panels.isEmpty()) {
             this.add(new JLabel("There are no datamaps."), BorderLayout.NORTH);
             return;
         }
 
-        builder.append(generationPanel);
-        builder.nextLine();
+        FormBuilder builder = FormBuilder.create()
+                .columns("left:pref, 3dlu")
+                .rows(panels.size()+"*(p,p)")
+                .padding(Paddings.DIALOG);
+
+        int i=1;
+        builder.add(generationPanel).xy(1,i);
+
         SortedSet<DataMap> keys = new TreeSet<>(panels.keySet());
+
         for(DataMap dataMap : keys) {
-            builder.append(panels.get(dataMap));
-            builder.nextLine();
+            builder.add(panels.get(dataMap)).xy(1,++i);
         }
+
         this.add(builder.getPanel(), BorderLayout.CENTER);
     }
 

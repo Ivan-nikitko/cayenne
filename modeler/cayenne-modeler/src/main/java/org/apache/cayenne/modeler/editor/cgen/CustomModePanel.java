@@ -27,8 +27,8 @@ import javax.swing.JTextField;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
@@ -159,54 +159,43 @@ public class CustomModePanel extends GeneratorControllerPanel {
         });
 
         // assemble
-        FormLayout layout = new FormLayout(
-                "right:105dlu, 1dlu, fill:240:grow, 1dlu, left:100dlu, 100dlu", "");
-        DefaultFormBuilder builder = new DefaultFormBuilder(layout);
-        builder.setDefaultDialogBorder();
-
-        builder.append("Output Directory:", outputFolder.getComponent(), selectOutputFolder);
-        builder.nextLine();
-
-        builder.append("Subclass Template:", subclassTemplate.getComboBox());
-        builder.nextLine();
-
-        builder.append("Superclass Template:", superclassTemplate.getComboBox());
-        builder.nextLine();
-        
-        builder.append("Embeddable Template:", embeddableTemplate.getComboBox());
-        builder.nextLine();
-        
-        builder.append("Embeddable Superclass Template:", embeddableSuperTemplate.getComboBox());
-        builder.nextLine();
-        
-        builder.append("DataMap Template:", queryTemplate.getComboBox());
-        builder.nextLine();
-        
-        builder.append("DataMap Superclass Template:", querySuperTemplate.getComboBox());
-        builder.nextLine();
-
-        builder.append("Output Pattern:", outputPattern.getComponent());
-        builder.nextLine();
-
-        builder.append("Make Pairs:", pairs);
-        builder.nextLine();
-
-        builder.append("Use Package Path:", usePackagePath);
-        builder.nextLine();
-
-        builder.append("Overwrite Subclasses:", overwrite);
-        builder.nextLine();
-
-        builder.append("Create Property Names:", createPropertyNames);
-        builder.nextLine();
-
-        builder.append("Create PK properties:", pkProperties);
-        builder.nextLine();
-
-        builder.append("Superclass package:", superPkg.getComponent());
+        JPanel build =  FormBuilder.create()
+                .columns("right:105dlu, 1dlu, fill:240:grow, 1dlu, left:100dlu, 100dlu")
+                .rows("14*(p, 3dlu)")
+                .add("Output Directory:").xy(1,1)
+                .add(outputFolder.getComponent()).xy(3,1)
+                .add(selectOutputFolder).xy(5,1)
+                .add("Subclass Template:").xy(1,3)
+                .add(subclassTemplate.getComboBox()).xy(3,3)
+                .add("Superclass Template:").xy(1,5)
+                .add(superclassTemplate.getComboBox()).xy(3,5)
+                .add("Embeddable Template:").xy(1,7)
+                .add(embeddableTemplate.getComboBox()).xy(3,7)
+                .add("Embeddable Superclass Template:").xy(1,9)
+                .add(embeddableSuperTemplate.getComboBox()).xy(3,9)
+                .add("DataMap Template:").xy(1,11)
+                .add(queryTemplate.getComboBox()).xy(3,11)
+                .add("DataMap Superclass Template:").xy(1,13)
+                .add(querySuperTemplate.getComboBox()).xy(3,13)
+                .add("Output Pattern:").xy(1,15)
+                .add(outputPattern.getComponent()).xy(3,15)
+                .add("Make Pairs:").xy(1,17)
+                .add(pairs).xy(3,17)
+                .add("Use Package Path:").xy(1,19)
+                .add(usePackagePath).xy(3,19)
+                .add("Overwrite Subclasses:").xy(1,21)
+                .add(overwrite).xy(3,21)
+                .add("Create Property Names:").xy(1,23)
+                .add(createPropertyNames).xy(3,23)
+                .add("Create PK properties:").xy(1,25)
+                .add(pkProperties).xy(3,25)
+                .add("Superclass package:").xy(1,27)
+                .add(superPkg.getComponent()).xy(3,27)
+                .padding(Paddings.DIALOG)
+                .build();
 
         setLayout(new BorderLayout());
-        add(builder.getPanel(), BorderLayout.CENTER);
+        add(build, BorderLayout.CENTER);
 
         JPanel links = new JPanel(new FlowLayout(FlowLayout.TRAILING));
         links.add(manageTemplatesLink);

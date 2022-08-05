@@ -19,6 +19,13 @@
 
 package org.apache.cayenne.modeler;
 
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
+import org.apache.cayenne.modeler.pref.TableColumnPreferences;
+import org.apache.cayenne.modeler.util.CayenneDialog;
+import org.apache.cayenne.modeler.util.CayenneTable;
+import org.apache.cayenne.modeler.util.PanelFactory;
+
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -30,14 +37,6 @@ import javax.swing.ListSelectionModel;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.pref.TableColumnPreferences;
-import org.apache.cayenne.modeler.util.CayenneDialog;
-import org.apache.cayenne.modeler.util.CayenneTable;
-import org.apache.cayenne.modeler.util.PanelFactory;
 
 /**
  * @since 4.2
@@ -55,7 +54,7 @@ public class DbRelationshipDialogView extends CayenneDialog {
     private TableColumnPreferences tablePreferences;
     private JButton addButton;
     private JButton removeButton;
-    private  JButton saveButton;
+    private JButton saveButton;
     private JButton cancelButton;
 
     private boolean cancelPressed;
@@ -95,49 +94,36 @@ public class DbRelationshipDialogView extends CayenneDialog {
 
         getContentPane().setLayout(new BorderLayout());
 
-        CellConstraints cc = new CellConstraints();
-        PanelBuilder builder = new PanelBuilder(
-                new FormLayout(
-                        "right:max(50dlu;pref), 3dlu, fill:min(150dlu;pref), 3dlu, fill:min(50dlu;pref)",
-                        "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, " +
-                                "p, 3dlu, p, 9dlu, p, 3dlu, top:14dlu, 3dlu, top:p:grow"));
-        builder.setDefaultDialogBorder();
-
-        builder.addSeparator("Create dbRelationship", cc.xywh(1, 1, 5, 1));
-
-        builder.addLabel("Relationship Name:", cc.xy(1, 3));
-        builder.add(name, cc.xywh(3, 3, 1, 1));
-
-        builder.addLabel("Source Entity:", cc.xy(1, 5));
-        builder.add(sourceName, cc.xywh(3, 5, 1, 1));
-
-        builder.addLabel("Target Entity:", cc.xy(1, 7));
-        builder.add(targetEntities, cc.xywh(3, 7, 1, 1));
-
-        builder.addLabel("To Dep PK:", cc.xy(1, 9));
-        builder.add(toDepPk, cc.xywh(3, 9, 1, 1));
-
-        builder.addLabel("To Many:", cc.xy(1, 11));
-        builder.add(toMany, cc.xywh(3, 11, 1, 1));
-
-        builder.addLabel("Comment:", cc.xy(1, 13));
-        builder.add(comment, cc.xywh(3, 13, 1, 1));
-
-        builder.addSeparator("DbRelationship Information", cc.xywh(1, 15, 5, 1));
-
-        builder.addLabel("Reverse Relationship Name:", cc.xy(1, 17));
-        builder.add(reverseName, cc.xywh(3, 17, 1, 1));
-
-        builder.addSeparator("Joins", cc.xywh(1, 19, 5, 1));
-        builder.add(new JScrollPane(table), cc.xywh(1, 21, 3, 3, "fill, fill"));
-
         JPanel joinButtons = new JPanel(new FlowLayout(FlowLayout.LEADING));
         joinButtons.add(addButton);
         joinButtons.add(removeButton);
 
-        builder.add(joinButtons, cc.xywh(5, 21, 1, 3));
+        JPanel panel = FormBuilder.create()
+                .columns("right:max(50dlu;pref), 3dlu, fill:min(150dlu;pref), 3dlu, fill:min(50dlu;pref)")
+                .rows("10*(p, 3dlu),top:14dlu, 3dlu, top:p:grow")
+                .addSeparator("Create dbRelationship").xywh(1, 1, 5, 1)
+                .add("Relationship Name:").xy(1, 3)
+                .add(name).xy(3, 3)
+                .addLabel("Source Entity:").xy(1, 5)
+                .add(sourceName).xy(3, 5)
+                .add("Target Entity:").xy(1, 7)
+                .add(targetEntities).xy(3, 7)
+                .add("To Dep PK:").xy(1, 9)
+                .add(toDepPk).xy(3, 9)
+                .add("To Many:").xy(1, 11)
+                .add(toMany).xy(3, 11)
+                .add("Comment:").xy(1, 13)
+                .add(comment).xy(3, 13)
+                .addSeparator("DbRelationship Information").xyw(1, 15, 5)
+                .add("Reverse Relationship Name:").xy(1, 17)
+                .add(reverseName).xy(3, 17)
+                .addSeparator("Joins").xyw(1, 19, 5)
+                .add(new JScrollPane(table)).xywh(1, 21, 3, 3, "fill, fill")
+                .add(joinButtons).xywh(5, 21, 1, 3)
+                .padding(Paddings.DIALOG)
+                .build();
 
-        getContentPane().add(builder.getPanel(), BorderLayout.CENTER);
+        getContentPane().add(panel, BorderLayout.CENTER);
         JButton[] buttons = {cancelButton, saveButton};
         getContentPane().add(PanelFactory.createButtonPanel(buttons), BorderLayout.SOUTH);
     }
@@ -151,7 +137,7 @@ public class DbRelationshipDialogView extends CayenneDialog {
 
     @Override
     public void setVisible(boolean b) {
-        if(b && cancelPressed) {
+        if (b && cancelPressed) {
             return;
         }
         super.setVisible(b);

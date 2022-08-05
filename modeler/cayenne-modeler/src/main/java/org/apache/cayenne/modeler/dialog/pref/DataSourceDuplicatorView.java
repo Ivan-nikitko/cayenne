@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.modeler.dialog.pref;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -47,18 +47,21 @@ public class DataSourceDuplicatorView extends JDialog {
         getRootPane().setDefaultButton(okButton);
 
         // assemble
-        FormLayout layout = new FormLayout("right:pref, 3dlu, fill:250", "");
-        DefaultFormBuilder builder = new DefaultFormBuilder(layout);
-        builder.setDefaultDialogBorder();
 
-        builder.append("Name:", dataSourceName);
+        JPanel panel = FormBuilder.create()
+                .columns("right:pref, 3dlu, fill:250")
+                .rows("p, 3dlu")
+                .add("Name:").xy(1, 1)
+                .add(dataSourceName).xy(3, 1)
+                .padding(Paddings.DIALOG)
+                .build();
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttons.add(cancelButton);
         buttons.add(okButton);
 
         getContentPane().setLayout(new BorderLayout());
-        getContentPane().add(builder.getPanel(), BorderLayout.CENTER);
+        getContentPane().add(panel, BorderLayout.CENTER);
         getContentPane().add(buttons, BorderLayout.SOUTH);
     }
 

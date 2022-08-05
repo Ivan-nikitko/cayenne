@@ -19,9 +19,8 @@
 
 package org.apache.cayenne.modeler.dialog.datamap;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -55,17 +54,14 @@ public class LockingUpdateView extends JDialog {
         relationships.setSelected(true);
 
         // do layout...
-
-        CellConstraints cc = new CellConstraints();
-        FormLayout layout = new FormLayout(
-                "left:max(180dlu;pref)",
-                "p, 3dlu, p, 3dlu, p, 3dlu");
-        PanelBuilder builder = new PanelBuilder(layout);
-        builder.setDefaultDialogBorder();
-
-        builder.add(entities, cc.xy(1, 1));
-        builder.add(attributes, cc.xy(1, 3));
-        builder.add(relationships, cc.xy(1, 5));
+        JPanel panel = FormBuilder.create()
+                .columns("left:120dlu,3dlu")
+                .rows("3*(p,3dlu)")
+                .add(entities).xy(1, 1)
+                .add(attributes).xy(1, 3)
+                .add(relationships).xy(1, 5)
+                .padding(Paddings.DIALOG)
+                .build();
 
         getRootPane().setDefaultButton(updateButton);
 
@@ -75,7 +71,7 @@ public class LockingUpdateView extends JDialog {
 
         Container contentPane = getContentPane();
         contentPane.setLayout(new BorderLayout());
-        contentPane.add(builder.getPanel(), BorderLayout.CENTER);
+        contentPane.add(panel, BorderLayout.CENTER);
         contentPane.add(buttonPanel, BorderLayout.SOUTH);
     }
 

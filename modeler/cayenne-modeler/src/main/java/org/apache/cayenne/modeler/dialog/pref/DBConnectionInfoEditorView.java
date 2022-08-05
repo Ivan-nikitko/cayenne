@@ -29,12 +29,11 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 
 /**
  * A generic panel for entering DataSource information.
- * 
  */
 public class DBConnectionInfoEditorView extends JPanel {
 
@@ -45,8 +44,6 @@ public class DBConnectionInfoEditorView extends JPanel {
     protected JPasswordField password;
 
     protected Collection<JLabel> labels;
-    
-    protected DefaultFormBuilder builder;
 
     public DBConnectionInfoEditorView() {
         adapters = new JComboBox();
@@ -58,19 +55,24 @@ public class DBConnectionInfoEditorView extends JPanel {
         password = new JPasswordField();
         labels = new ArrayList<>();
 
-        // assemble
-        FormLayout layout = new FormLayout("right:pref, 3dlu, fill:160dlu:grow", "");
-        builder = new DefaultFormBuilder(layout);
-        builder.setDefaultDialogBorder();
-
-        labels.add(builder.append("JDBC Driver:", driver));
-        labels.add(builder.append("DB URL:", url));
-        labels.add(builder.append("User Name:", userName));
-        labels.add(builder.append("Password:", password));
-        labels.add(builder.append("Adapter (optional):", adapters));
+        JPanel panel = FormBuilder.create()
+                .columns("right:pref, 3dlu, fill:160dlu:grow")
+                .rows("5*(p, 3dlu)")
+                .add("JDBC Driver:").xy(1, 1)
+                .add(driver).xy(3, 1)
+                .add("DB URL:").xy(1, 3)
+                .add(url).xy(3, 3)
+                .add("User Name:").xy(1, 5)
+                .add(userName).xy(3, 5)
+                .add("Password:").xy(1, 7)
+                .add(password).xy(3, 7)
+                .add("Adapter (optional):").xy(1, 9)
+                .add(adapters).xy(3, 9)
+                .padding(Paddings.DIALOG)
+                .build();
 
         this.setLayout(new BorderLayout());
-        this.add(builder.getPanel(), BorderLayout.CENTER);
+        this.add(panel, BorderLayout.CENTER);
     }
 
     public JComboBox getAdapters() {
@@ -92,26 +94,13 @@ public class DBConnectionInfoEditorView extends JPanel {
     public JTextField getUserName() {
         return userName;
     }
-    
-    /**
-     * @return Builder of the view (to allow dynamic extending of the component)
-     */
-    public DefaultFormBuilder getBuilder() {
-        return builder;
-    }
 
     public void setEnabled(boolean enabled) {
-        if (isEnabled() != enabled) {
-            super.setEnabled(enabled);
-            for (JLabel label : labels) {
-                label.setEnabled(enabled);
-            }
+        adapters.setEnabled(enabled);
+        driver.setEnabled(enabled);
+        url.setEnabled(enabled);
+        userName.setEnabled(enabled);
+        password.setEnabled(enabled);
 
-            adapters.setEnabled(enabled);
-            driver.setEnabled(enabled);
-            url.setEnabled(enabled);
-            userName.setEnabled(enabled);
-            password.setEnabled(enabled);
-        }
     }
 }

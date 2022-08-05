@@ -27,8 +27,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import java.util.Vector;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
@@ -70,23 +70,37 @@ public class ReverseEngineeringConfigPanel extends JPanel {
     }
 
     private void buildView() {
-        FormLayout panelLayout = new FormLayout(DATA_FIELDS_LAYOUT);
-        DefaultFormBuilder panelBuilder = new DefaultFormBuilder(panelLayout);
-        panelBuilder.setDefaultDialogBorder();
-
-        panelBuilder.append("Tables with Meaningful PK Pattern:", meaningfulPk.getComponent());
-        panelBuilder.append("Strip from table names:", stripFromTableNames.getComponent());
-        panelBuilder.append("Skip relationships loading:", skipRelationshipsLoading);
-        panelBuilder.append("Skip primary key loading:", skipPrimaryKeyLoading);
-        panelBuilder.append("Force datamap catalog:", forceDataMapCatalog);
-        panelBuilder.append("Force datamap schema:", forceDataMapSchema);
-        panelBuilder.append("Use Java primitive types:", usePrimitives);
-        panelBuilder.append("Use java.util.Date type:", useJava7Types);
-        panelBuilder.append("Naming strategy:", strategyCombo);
-        panelBuilder.append("Table types:", tableTypes.getComponent());
-
-        add(panelBuilder.getPanel());
+        add(getPanel());
     }
+
+    private JPanel getPanel() {
+        return FormBuilder.create()
+                .columns(DATA_FIELDS_LAYOUT)
+                .rows("10*(p, 3dlu)")
+                .add("Tables with Meaningful PK Pattern:").xy(1, 1)
+                .add(meaningfulPk.getComponent()).xy(3, 1)
+                .add("Strip from table names:").xy(1, 3)
+                .add(stripFromTableNames.getComponent()).xy(3, 3)
+                .add("Skip relationships loading:").xy(1, 5)
+                .add(skipRelationshipsLoading).xy(3, 5)
+                .add("Skip primary key loading:").xy(1, 7)
+                .add(skipPrimaryKeyLoading).xy(3, 7)
+                .add("Force datamap catalog:").xy(1, 9)
+                .add(forceDataMapCatalog).xy(3, 9)
+                .add("Force datamap schema:").xy(1, 11)
+                .add(forceDataMapSchema).xy(3, 11)
+                .add("Use Java primitive types:").xy(1,13)
+                .add(usePrimitives).xy(3,13)
+                .add("Use java.util.Date type:").xy(1,15)
+                .add(useJava7Types).xy(3,15)
+                .add("Naming strategy:").xy(1,17)
+                .add(strategyCombo).xy(3,17)
+                .add("Table types:").xy(1,19)
+                .add(tableTypes.getComponent()).xy(3,19)
+                .padding(Paddings.DIALOG)
+                .build();
+    }
+
 
     void fillCheckboxes(ReverseEngineering reverseEngineering) {
         skipRelationshipsLoading.setSelected(reverseEngineering.getSkipRelationshipsLoading());
@@ -127,7 +141,7 @@ public class ReverseEngineeringConfigPanel extends JPanel {
         meaningfulPk = new TextAdapter(meaningfulPkField) {
             protected void updateModel(String text) {
                 getReverseEngineeringBySelectedMap().setMeaningfulPkTables(text);
-                if(!dbImportView.isInitFromModel()) {
+                if (!dbImportView.isInitFromModel()) {
                     projectController.setDirty(true);
                 }
             }
@@ -139,7 +153,7 @@ public class ReverseEngineeringConfigPanel extends JPanel {
         stripFromTableNames = new TextAdapter(stripFromTableNamesField) {
             protected void updateModel(String text) {
                 getReverseEngineeringBySelectedMap().setStripFromTableNames(text);
-                if(!dbImportView.isInitFromModel()) {
+                if (!dbImportView.isInitFromModel()) {
                     projectController.setDirty(true);
                 }
             }
@@ -151,7 +165,7 @@ public class ReverseEngineeringConfigPanel extends JPanel {
             @Override
             protected void updateModel(String text) throws ValidationException {
                 ReverseEngineering reverseEngineering = getReverseEngineeringBySelectedMap();
-                if(text == null || text.isEmpty()) {
+                if (text == null || text.isEmpty()) {
                     String[] tableTypesFromReverseEngineering = reverseEngineering.getTableTypes();
                     tableTypes.setText(String.join(",", tableTypesFromReverseEngineering));
                     JOptionPane.showMessageDialog(
@@ -162,12 +176,12 @@ public class ReverseEngineeringConfigPanel extends JPanel {
                 } else {
                     reverseEngineering.getTableTypesCollection().clear();
                     String[] types = text.split("\\s*,\\s*");
-                    for(String type : types) {
-                        if(!type.isEmpty()) {
+                    for (String type : types) {
+                        if (!type.isEmpty()) {
                             reverseEngineering.addTableType(type.trim());
                         }
                     }
-                    if(!dbImportView.isInitFromModel()) {
+                    if (!dbImportView.isInitFromModel()) {
                         projectController.setDirty(true);
                     }
                 }
@@ -196,37 +210,37 @@ public class ReverseEngineeringConfigPanel extends JPanel {
     private void initListeners() {
         skipRelationshipsLoading.addActionListener(e -> {
             getReverseEngineeringBySelectedMap().setSkipRelationshipsLoading(skipRelationshipsLoading.isSelected());
-            if(!dbImportView.isInitFromModel()) {
+            if (!dbImportView.isInitFromModel()) {
                 projectController.setDirty(true);
             }
         });
         skipPrimaryKeyLoading.addActionListener(e -> {
             getReverseEngineeringBySelectedMap().setSkipPrimaryKeyLoading(skipPrimaryKeyLoading.isSelected());
-            if(!dbImportView.isInitFromModel()) {
+            if (!dbImportView.isInitFromModel()) {
                 projectController.setDirty(true);
             }
         });
         forceDataMapCatalog.addActionListener(e -> {
             getReverseEngineeringBySelectedMap().setForceDataMapCatalog(forceDataMapCatalog.isSelected());
-            if(!dbImportView.isInitFromModel()) {
+            if (!dbImportView.isInitFromModel()) {
                 projectController.setDirty(true);
             }
         });
         forceDataMapSchema.addActionListener(e -> {
             getReverseEngineeringBySelectedMap().setForceDataMapSchema(forceDataMapSchema.isSelected());
-            if(!dbImportView.isInitFromModel()) {
+            if (!dbImportView.isInitFromModel()) {
                 projectController.setDirty(true);
             }
         });
         usePrimitives.addActionListener(e -> {
             getReverseEngineeringBySelectedMap().setUsePrimitives(usePrimitives.isSelected());
-            if(!dbImportView.isInitFromModel()) {
+            if (!dbImportView.isInitFromModel()) {
                 projectController.setDirty(true);
             }
         });
         useJava7Types.addActionListener(e -> {
             getReverseEngineeringBySelectedMap().setUseJava7Types(useJava7Types.isSelected());
-            if(!dbImportView.isInitFromModel()) {
+            if (!dbImportView.isInitFromModel()) {
                 projectController.setDirty(true);
             }
         });
@@ -235,16 +249,16 @@ public class ReverseEngineeringConfigPanel extends JPanel {
             checkStrategy(strategy);
             getReverseEngineeringBySelectedMap().setNamingStrategy(strategy);
             NameGeneratorPreferences.getInstance().addToLastUsedStrategies(strategy);
-            if(!dbImportView.isInitFromModel()) {
+            if (!dbImportView.isInitFromModel()) {
                 projectController.setDirty(true);
             }
         });
     }
 
     private void checkStrategy(String strategy) {
-        try{
+        try {
             Thread.currentThread().getContextClassLoader().loadClass(strategy);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             JOptionPane.showMessageDialog(
                     this,
                     strategy + " not found. Please, add naming strategy to classpath.",

@@ -39,6 +39,8 @@ import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DataMap;
@@ -82,7 +84,6 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
     protected ProjectController mediator;
     protected TextAdapter name;
     protected TextAdapter className;
-
     protected JLabel superclassLabel;
     protected TextAdapter superClassName;
     protected TextAdapter qualifier;
@@ -174,28 +175,38 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
                 setComment(text);
             }
         };
+        add(getPanel(), BorderLayout.CENTER);
+    }
 
-        // assemble
-        FormLayout layout = new FormLayout("right:pref, 3dlu, fill:200dlu", "");
-        DefaultFormBuilder builder = new DefaultFormBuilder(layout);
-        builder.setDefaultDialogBorder();
-
-        builder.appendSeparator("ObjEntity Configuration");
-        builder.append("ObjEntity Name:", name.getComponent());
-        builder.append("Inheritance:", superEntityCombo);
-        builder.append(tableLabel, dbEntityCombo);
-        isAbstractLabel = builder.append("Abstract class:", isAbstract);
-        builder.append("Comment:", comment.getComponent());
-        builder.appendSeparator();
-
-        builder.append("Java Class:", className.getComponent());
-     
-        superclassLabel = builder.append("Superclass:", superClassName.getComponent());
-        builder.append("Qualifier:", qualifier.getComponent());
-        builder.append("Read-Only:", readOnly);
-        builder.append("Optimistic Locking:", optimisticLocking);
-
-        add(builder.getPanel(), BorderLayout.CENTER);
+    private JPanel getPanel() {
+        this.superclassLabel = new JLabel("Superclass:");
+        return FormBuilder.create()
+                .columns("right:pref, 3dlu, fill:200dlu")
+                .rows("12*(p, 3dlu)")
+                .addSeparator("ObjEntity Configuration").xyw(1, 1, 3)
+                .add("ObjEntity Name:").xy(1, 3)
+                .add(name.getComponent()).xy(3, 3)
+                .add("Inheritance:").xy(1, 5)
+                .add(superEntityCombo).xy(3, 5)
+                .add(tableLabel).xy(1, 7)
+                .add(dbEntityCombo).xy(3, 7)
+                .add("Abstract class:").xy(1, 9)
+                .add(isAbstract).xy(3, 9)
+                .add("Comment:").xy(1, 11)
+                .add(comment.getComponent()).xy(3, 11)
+                .addSeparator("").xyw(1, 13, 3)
+                .add("Java Class:").xy(1, 15)
+                .add(className.getComponent()).xy(3, 15)
+                .add("Superclass:").xy(1, 17)
+                .add(superClassName.getComponent()).xy(3, 17)
+                .add("Qualifier:").xy(1, 19)
+                .add(qualifier.getComponent()).xy(3, 19)
+                .add("Read-Only:").xy(1, 21)
+                .add(readOnly).xy(3, 21)
+                .add("Optimistic Locking:").xy(1, 23)
+                .add(optimisticLocking).xy(3, 23)
+                .padding(Paddings.DIALOG)
+                .build();
     }
 
     private void initController() {
@@ -313,7 +324,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
     /**
      * Updates the view from the current model state. Invoked when a currently displayed
      * ObjEntity is changed.
-     * 
+     *
      * @param entity current entity
      */
     private void initFromModel(final ObjEntity entity) {

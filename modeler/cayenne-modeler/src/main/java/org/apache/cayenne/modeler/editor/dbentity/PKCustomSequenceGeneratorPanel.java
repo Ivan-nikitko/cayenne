@@ -19,12 +19,8 @@
 
 package org.apache.cayenne.modeler.editor.dbentity;
 
-import java.awt.BorderLayout;
-import java.awt.Font;
-
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
 import org.apache.cayenne.map.event.EntityEvent;
@@ -33,8 +29,11 @@ import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import java.awt.BorderLayout;
+import java.awt.Font;
 
 public class PKCustomSequenceGeneratorPanel extends PKGeneratorPanel {
 
@@ -67,19 +66,21 @@ public class PKCustomSequenceGeneratorPanel extends PKGeneratorPanel {
 
         // assemble
 
-        DefaultFormBuilder builder = new DefaultFormBuilder(new FormLayout(
-                "right:70dlu, 3dlu, 20dlu, 3dlu, fill:177dlu",
-                ""));
-
-        builder.setDefaultDialogBorder();
-
-        builder.append("Sequence Name:", customPKName.getComponent(), 3);
-        builder.append("Cached PK Size:", customPKSize.getComponent());
-        builder.nextLine();
-        builder.append("", note, 3);
-
         setLayout(new BorderLayout());
-        add(builder.getPanel(), BorderLayout.CENTER);
+        add(getPanel(note), BorderLayout.CENTER);
+    }
+
+    private JPanel getPanel(JLabel note) {
+        return FormBuilder.create()
+                .columns("right:90dlu, 3dlu, 20dlu, 3dlu, fill:177dlu")
+                .rows("3*(p, 3dlu)")
+                .add("Sequence Name:").xy(1, 1)
+                .add(customPKName.getComponent()).xy(3, 1)
+                .add("Cached PK Size:").xy(1, 3)
+                .add(customPKSize.getComponent()).xy(3, 3)
+                .add(note).xyw(3,5,3)
+                .padding(Paddings.DIALOG)
+                .build();
     }
 
     protected void onInitInternal(DbEntity entity) {

@@ -40,7 +40,7 @@
 
 		<dependency>
 			<groupId>com.jgoodies</groupId>
-			<artifactId>forms</artifactId>
+			<artifactId>jgoodies-forms</artifactId>
 		</dependency>
 
 		<dependency>

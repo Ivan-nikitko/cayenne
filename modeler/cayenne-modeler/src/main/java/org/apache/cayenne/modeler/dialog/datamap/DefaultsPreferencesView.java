@@ -19,9 +19,8 @@
 
 package org.apache.cayenne.modeler.dialog.datamap;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -60,21 +59,26 @@ public class DefaultsPreferencesView extends JDialog {
 
         getRootPane().setDefaultButton(updateButton);
         // assemble
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.add(cancelButton);
-        buttonPanel.add(updateButton);
-
-        CellConstraints cc = new CellConstraints();
-        FormLayout layout = new FormLayout("left:max(180dlu;pref)", "p, 3dlu, p, 3dlu");
-        PanelBuilder builder = new PanelBuilder(layout);
-        builder.setDefaultDialogBorder();
-
-        builder.add(updateAll, cc.xy(1, 1));
-        builder.add(updateEmpty, cc.xy(1, 3));
-
+        configureButtonPanel();
         setLayout(new BorderLayout());
-        add(builder.getPanel(), BorderLayout.CENTER);
+        add(getPanel(), BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
+    }
+
+    private void configureButtonPanel() {
+        this.buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        this.buttonPanel.add(cancelButton);
+        this.buttonPanel.add(updateButton);
+    }
+
+    private JPanel getPanel() {
+        return FormBuilder.create()
+                .columns("left:max(180dlu;pref)")
+                .rows("p, 3dlu, p, 3dlu")
+                .add(updateAll).xy(1, 1)
+                .add(updateEmpty).xy(1, 3)
+                .padding(Paddings.DIALOG)
+                .build();
     }
 
     public JRadioButton getUpdateAll() {

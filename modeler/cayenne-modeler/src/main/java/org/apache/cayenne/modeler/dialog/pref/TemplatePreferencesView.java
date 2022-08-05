@@ -28,6 +28,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.util.CayenneTable;
 
@@ -48,19 +50,21 @@ public class TemplatePreferencesView extends JPanel {
         table.setRowHeight(25);
 
         // assemble
-
-        FormLayout layout = new FormLayout("fill:min(150dlu;pref)", "");
-        DefaultFormBuilder builder = new DefaultFormBuilder(layout);
-        builder.setDefaultDialogBorder();
-
-        builder.append(addButton);
-        builder.append(removeButton);
-
         setLayout(new BorderLayout());
         JScrollPane ScrollPane = new JScrollPane(table);
         ScrollPane.setBorder(BorderFactory.createEmptyBorder());
         add(ScrollPane, BorderLayout.CENTER);
-        add(builder.getPanel(), BorderLayout.EAST);
+        add(getPanel(), BorderLayout.EAST);
+    }
+
+    private JPanel getPanel() {
+        return FormBuilder.create()
+                .columns("fill:min(150dlu;pref)")
+                .rows("p, 3dlu, p")
+                .add(addButton).xy(1, 1)
+                .add(removeButton).xy(1, 3)
+                .padding(Paddings.DIALOG)
+                .build();
     }
 
     public JTable getTable() {

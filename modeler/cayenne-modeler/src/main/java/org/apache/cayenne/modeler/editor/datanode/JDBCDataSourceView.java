@@ -19,19 +19,16 @@
 
 package org.apache.cayenne.modeler.editor.datanode;
 
-import java.awt.BorderLayout;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
+import org.apache.cayenne.modeler.util.JTextFieldUndoable;
+import org.apache.cayenne.modeler.util.JTextFieldValidator;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-
-import org.apache.cayenne.modeler.util.JTextFieldValidator;
-import org.apache.cayenne.modeler.util.JTextFieldUndoable;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import java.awt.BorderLayout;
 
 public class JDBCDataSourceView extends JPanel {
 
@@ -61,31 +58,29 @@ public class JDBCDataSourceView extends JPanel {
                 "There are some whitespaces in this field");
 
         // assemble
-        CellConstraints cc = new CellConstraints();
-        FormLayout layout = new FormLayout(
-                "right:80dlu, 3dlu, fill:50dlu, 3dlu, fill:74dlu, 3dlu, fill:70dlu", // Columns
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p"); // Rows
 
-        PanelBuilder builder = new PanelBuilder(layout);
-        builder.setDefaultDialogBorder();
-
-        builder.addSeparator("JDBC Configuration", cc.xywh(1, 1, 7, 1));
-        builder.addLabel("JDBC Driver:", cc.xy(1, 3));
-        builder.add(driver, cc.xywh(3, 3, 5, 1));
-        builder.addLabel("DB URL:", cc.xy(1, 5));
-        builder.add(url, cc.xywh(3, 5, 5, 1));
-        builder.addLabel("Username:", cc.xy(1, 7));
-        builder.add(userName, cc.xywh(3, 7, 5, 1));
-        builder.addLabel("Password:", cc.xy(1, 9));
-        builder.add(password, cc.xywh(3, 9, 5, 1));
-        builder.addLabel("Min Connections:", cc.xy(1, 11));
-        builder.add(minConnections, cc.xy(3, 11));
-        builder.addLabel("Max Connections:", cc.xy(1, 13));
-        builder.add(maxConnections, cc.xy(3, 13));
-        builder.add(syncWithLocal, cc.xy(7, 15));
+        JPanel panel = FormBuilder.create()
+                .columns("right:80dlu, 3dlu, fill:50dlu, 3dlu, fill:74dlu, 3dlu, fill:93dlu")
+                .rows("13*(p,3dlu)")
+                .addSeparator("JDBC Configuration").xywh(1, 1, 7, 1)
+                .add("JDBC Driver:").xy(1, 3)
+                .add(driver).xyw(3, 3, 5)
+                .add("DB URL:").xy(1, 5)
+                .add(url).xyw(3, 5, 5)
+                .add("Username:").xy(1, 7)
+                .add(userName).xyw(3, 7, 5)
+                .add("Password:").xy(1, 9)
+                .add(password).xyw(3, 9, 5)
+                .add("Min Connections:").xy(1, 11)
+                .add(minConnections).xy(3, 11)
+                .add("Max Connections:").xy(1, 13)
+                .add(maxConnections).xy(3, 13)
+                .add(syncWithLocal).xy(7, 15)
+                .padding(Paddings.DIALOG)
+                .build();
 
         this.setLayout(new BorderLayout());
-        this.add(builder.getPanel(), BorderLayout.CENTER);
+        this.add(panel, BorderLayout.CENTER);
     }
 
     public JTextField getDriver() {

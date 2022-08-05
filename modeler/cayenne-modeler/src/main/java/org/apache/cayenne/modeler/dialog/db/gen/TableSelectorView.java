@@ -19,21 +19,21 @@
 
 package org.apache.cayenne.modeler.dialog.db.gen;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
+import org.apache.cayenne.modeler.util.CayenneTable;
 
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.util.CayenneTable;
+import javax.swing.ScrollPaneConstants;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 
 /**
+ *
  */
 public class TableSelectorView extends JPanel {
 
@@ -63,20 +63,22 @@ public class TableSelectorView extends JPanel {
         tables.setRowHeight(25);
         tables.setRowMargin(3);
 
-        CellConstraints cc = new CellConstraints();
-        PanelBuilder builder = new PanelBuilder(new FormLayout(
-                "fill:min(50dlu;pref):grow",
-                "p, 3dlu, fill:40dlu:grow"));
-        builder.setDefaultDialogBorder();
-        builder.addSeparator("Select Tables", cc.xy(1, 1));
-        builder.add(new JScrollPane(
-                tables,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), cc.xy(1, 3));
-
         setLayout(new BorderLayout());
         add(topPanel, BorderLayout.NORTH);
-        add(builder.getPanel(), BorderLayout.CENTER);
+        add(getPanel(), BorderLayout.CENTER);
+    }
+
+    private JPanel getPanel() {
+        return FormBuilder.create()
+                .columns("fill:min(50dlu;pref):grow")
+                .rows("p, 3dlu, fill:40dlu:grow")
+                .addSeparator("Select Tables").xy(1, 1)
+                .add(new JScrollPane(
+                        tables,
+                        ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                        ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER)).xy(1, 3)
+                .padding(Paddings.TABBED_DIALOG)
+                .build();
     }
 
     public JTable getTables() {

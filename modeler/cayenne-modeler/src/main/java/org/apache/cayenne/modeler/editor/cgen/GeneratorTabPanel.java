@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
@@ -48,18 +48,22 @@ public class GeneratorTabPanel extends JPanel {
         generationMode.addItemListener(e -> modeLayout.show(modesPanel, Objects.requireNonNull(generationMode.getSelectedItem()).toString()));
 
         // assemble
-        FormLayout layout = new FormLayout("right:77dlu, 3dlu, fill:240, fill:300dlu:grow", "");
-        DefaultFormBuilder builder = new DefaultFormBuilder(layout);
-        builder.setDefaultDialogBorder();
-        builder.append("Type:", generationMode, 1);
-        builder.appendSeparator();
+
+        JPanel typePanel = FormBuilder.create()
+                .columns("right:77dlu, 3dlu, fill:240, fill:300dlu:grow")
+                .rows("3*(p,3dlu)")
+                .add("Type:").xy(1, 1)
+                .add(generationMode).xy(3, 1)
+                .addSeparator("").xyw(1, 5, 4)
+                .padding(Paddings.DIALOG)
+                .build();
 
         for (int i = 0; i < modeNames.length; i++) {
             modesPanel.add(modePanels[i], modeNames[i]);
         }
 
         panel.setLayout(new BorderLayout());
-        panel.add(builder.getPanel(), BorderLayout.NORTH);
+        panel.add(typePanel, BorderLayout.NORTH);
         panel.add(modesPanel, BorderLayout.CENTER);
 
         add(panel, BorderLayout.CENTER);

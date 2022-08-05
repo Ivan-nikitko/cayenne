@@ -19,14 +19,17 @@
 
 package org.apache.cayenne.modeler.dialog.pref;
 
-import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
 
 /**
+ *
  */
 public class GeneralPreferencesView extends JPanel {
 
@@ -41,24 +44,19 @@ public class GeneralPreferencesView extends JPanel {
         this.autoLoadProjectBox = new JCheckBox("Automatically Load Last Opened Project");
         this.deletePromptBox = new JCheckBox("Always Delete Items Without Prompt");
 
-        FormLayout layout = new FormLayout(
-                "right:pref, 3dlu, 30dlu, 3dlu, fill:70dlu",
-                "p, 3dlu, p, 12dlu, p, 30dlu, p, 12dlu, p, 3dlu, p, fill:40dlu:grow");
-
-        CellConstraints cc = new CellConstraints();
-        PanelBuilder builder = new PanelBuilder(layout);
-        builder.setDefaultDialogBorder();
-        builder.addSeparator("General Preferences", cc.xyw(1, 1, 5));
-
-        builder.add(encodingSelectorLabel, cc.xy(1, 5));
-        builder.add(encodingSelector, cc.xywh(3, 5, 3, 3));
-        builder.add(autoLoadProjectBox, cc.xy(1, 7, CellConstraints.LEFT, CellConstraints.DEFAULT));
-
-        builder.addSeparator("Editor Preferences", cc.xyw(1, 9, 5));
-        builder.add(deletePromptBox, cc.xy(1, 11, CellConstraints.LEFT, CellConstraints.DEFAULT));
+        JPanel panel = FormBuilder.create()
+                .columns("right:pref, 3dlu, 30dlu, 3dlu, fill:70dlu")
+                .rows("p, 3dlu, p, 12dlu, p, 30dlu, p, 12dlu, p, 3dlu, p, fill:40dlu:grow")
+                .addSeparator("General Preferences").xyw(1, 1, 5)
+                .add(encodingSelector).xywh(1, 5, 3, 3)
+                .add(autoLoadProjectBox).xy(1, 7, CellConstraints.LEFT, CellConstraints.DEFAULT)
+                .addSeparator("Editor Preferences").xyw(1, 9, 5)
+                .add(deletePromptBox).xy(1, 11, CellConstraints.LEFT, CellConstraints.DEFAULT)
+                .padding(Paddings.DIALOG)
+                .build();
 
         this.setLayout(new BorderLayout());
-        this.add(builder.getPanel(), BorderLayout.CENTER);
+        this.add(panel, BorderLayout.CENTER);
     }
 
     public void setEnabled(boolean b) {

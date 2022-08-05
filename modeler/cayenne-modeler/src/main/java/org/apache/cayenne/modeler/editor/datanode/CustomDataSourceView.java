@@ -24,6 +24,8 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import org.apache.cayenne.modeler.util.JTextFieldUndoable;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
@@ -40,17 +42,20 @@ public class CustomDataSourceView extends JPanel {
         locationHint = new JTextFieldUndoable();
 
         // assemble
-        FormLayout layout = new FormLayout("right:80dlu, 3dlu, fill:200dlu", "");
-        DefaultFormBuilder builder = new DefaultFormBuilder(layout);
-        builder.setDefaultDialogBorder();
 
-        builder.appendSeparator("Custom Data Source Factory");
-
-        builder.append("Factory Class:", factoryName);
-        builder.append("Location Hint (optional):", locationHint);
+        JPanel panel = FormBuilder.create()
+                .columns("right:[80dlu,pref], 3dlu, fill:223dlu")
+                .rows("3*(p, 3dlu)")
+                .addSeparator("Custom Data Source Factory").xyw(1,  1, 3)
+                .add("Factory Class:").xy(1, 3)
+                .add(factoryName).xy(3, 3)
+                .add("Location Hint (optional):").xy(1, 5)
+                .add(locationHint).xy(3, 5)
+                .padding(Paddings.DIALOG)
+                .build();
 
         this.setLayout(new BorderLayout());
-        this.add(builder.getPanel(), BorderLayout.CENTER);
+        this.add(panel, BorderLayout.CENTER);
     }
 
     public JTextField getLocationHint() {

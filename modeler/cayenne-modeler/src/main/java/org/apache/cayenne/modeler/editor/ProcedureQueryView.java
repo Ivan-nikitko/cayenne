@@ -19,11 +19,8 @@
 
 package org.apache.cayenne.modeler.editor;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.RowSpec;
-import org.apache.cayenne.configuration.ConfigurationNode;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
@@ -32,8 +29,6 @@ import org.apache.cayenne.map.ProcedureQueryDescriptor;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.QueryDisplayEvent;
-import org.apache.cayenne.modeler.event.QueryDisplayListener;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.ProjectUtil;
@@ -44,8 +39,14 @@ import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JComboBox;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
@@ -53,6 +54,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ *
  */
 public class ProcedureQueryView extends JPanel {
 
@@ -106,24 +108,24 @@ public class ProcedureQueryView extends JPanel {
         properties = new ProcedureQueryPropertiesPanel(mediator);
 
         // assemble
-        CellConstraints cc = new CellConstraints();
-        FormLayout layout = new FormLayout(
-                "right:max(80dlu;pref), 3dlu, fill:max(200dlu;pref)",
-                "p, 3dlu, p, 3dlu, p, 3dlu, p");
-        PanelBuilder builder = new PanelBuilder(layout);
-        builder.setDefaultDialogBorder();
-
-        builder.addSeparator("ProcedureQuery Settings", cc.xywh(1, 1, 3, 1));
-        builder.addLabel("Query Name:", cc.xy(1, 3));
-        builder.add(name.getComponent(), cc.xy(3, 3));
-        builder.addLabel("Procedure:", cc.xy(1, 5));
-        builder.add(queryRoot, cc.xy(3, 5));
-        builder.addLabel("Comment:", cc.xy(1, 7));
-        builder.add(comment.getComponent(), cc.xy(3, 7));
-
         this.setLayout(new BorderLayout());
-        this.add(builder.getPanel(), BorderLayout.NORTH);
+        this.add(getPanel(), BorderLayout.NORTH);
         this.add(properties, BorderLayout.CENTER);
+    }
+
+    private JPanel getPanel() {
+        return FormBuilder.create()
+                .columns("right:max(80dlu;pref), 3dlu, fill:max(200dlu;pref)")
+                .rows("4*(p, 3dlu)")
+                .addSeparator("ProcedureQuery Settings").xyw(1, 1, 3)
+                .addLabel("Query Name:").xy(1, 3)
+                .add(name.getComponent()).xy(3, 3)
+                .addLabel("Procedure:").xy(1, 5)
+                .add(queryRoot).xy(3, 5)
+                .addLabel("Comment:").xy(1, 7)
+                .add(comment.getComponent()).xy(3, 7)
+                .padding(Paddings.DIALOG)
+                .build();
     }
 
     private void initController() {
@@ -274,7 +276,8 @@ public class ProcedureQueryView extends JPanel {
             super(mediator);
         }
 
-        protected PanelBuilder createPanelBuilder() {
+        @Override
+        protected FormBuilder createPanelBuilder() {
             labelCase = Application.getWidgetFactory().createUndoableComboBox();
             labelCase.setRenderer(new LabelCapsRenderer());
             labelCase.addActionListener(event -> {
@@ -282,20 +285,13 @@ public class ProcedureQueryView extends JPanel {
                 setQueryProperty(ProcedureQuery.COLUMN_NAME_CAPITALIZATION_PROPERTY, value);
             });
 
-            PanelBuilder builder = super.createPanelBuilder();
-
-            RowSpec[] extraRows = RowSpec.decodeSpecs("3dlu, p");
-            for (RowSpec extraRow : extraRows) {
-                builder.appendRow(extraRow);
-            }
-
-            CellConstraints cc = new CellConstraints();
-            builder.addLabel("Row Label Case:", cc.xy(1, 17));
-            builder.add(labelCase, cc.xywh(3, 17, 5, 1));
-
+            FormBuilder builder = super.createPanelBuilder();
+            builder.addLabel("Row Label Case:").xy(1, 17);
+            builder.add(labelCase).xywh(3, 17, 5, 1);
             return builder;
         }
 
+        @Override
         public void initFromModel(QueryDescriptor query) {
             super.initFromModel(query);
 

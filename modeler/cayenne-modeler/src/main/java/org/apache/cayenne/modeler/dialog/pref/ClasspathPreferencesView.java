@@ -19,17 +19,16 @@
 
 package org.apache.cayenne.modeler.dialog.pref;
 
-import java.awt.BorderLayout;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
+import org.apache.cayenne.modeler.util.CayenneTable;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.util.CayenneTable;
+import java.awt.BorderLayout;
 
 /**
  */
@@ -54,21 +53,21 @@ public class ClasspathPreferencesView extends JPanel {
         table.setRowHeight(25);
 
         // assemble
-
-        FormLayout layout = new FormLayout("fill:min(150dlu;pref)", "");
-        DefaultFormBuilder builder = new DefaultFormBuilder(layout);
-        builder.setDefaultDialogBorder();
-
-        builder.append(addJarButton);
-        builder.append(addDirButton);
-        builder.append(addMvnButton);
-        builder.append(removeEntryButton);
+        JPanel buttonsPanel = FormBuilder.create()
+                .columns("fill:min(150dlu;pref)")
+                .rows("4*(p, 3dlu)")
+                .add(addJarButton).xy(1, 1)
+                .add(addDirButton).xy(1, 3)
+                .add(addMvnButton).xy(1, 5)
+                .add(removeEntryButton).xy(1, 7)
+                .padding(Paddings.DIALOG)
+                .build();
 
         setLayout(new BorderLayout());
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         add(scrollPane, BorderLayout.CENTER);
-        add(builder.getPanel(), BorderLayout.EAST);
+        add(buttonsPanel, BorderLayout.EAST);
     }
 
     public JButton getAddDirButton() {

@@ -18,13 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor;
 
-import java.awt.BorderLayout;
-
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import org.apache.cayenne.modeler.ProjectController;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
 
 public class EjbqlQueryPropertiesPanel extends SelectPropertiesPanel {
 
@@ -32,32 +32,31 @@ public class EjbqlQueryPropertiesPanel extends SelectPropertiesPanel {
         super(mediator);
     }
 
-    protected PanelBuilder createPanelBuilder() {
-        CellConstraints cc = new CellConstraints();
-        FormLayout layout = new FormLayout(
-                "right:max(80dlu;pref), 3dlu, left:max(10dlu;pref), "
-                        + "3dlu, left:max(37dlu;pref), 3dlu, fill:max(147dlu;pref)",
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p");
-
-        PanelBuilder builder = new PanelBuilder(layout);
-        builder.setDefaultDialogBorder();
-        builder.addSeparator("Select Properties", cc.xywh(1, 1, 7, 1));
-        builder.addLabel("Result Caching:", cc.xy(1, 3));
-        builder.add(cacheStrategy, cc.xywh(3, 3, 5, 1));
-        cacheGroupsLabel = builder.addLabel("Cache Group:", cc.xy(1, 7));
-        builder.add(cacheGroups.getComponent(), cc.xywh(3, 7, 5, 1));
-        builder.addLabel("Fetch Offset, Rows:", cc.xy(1, 9));
-        builder.add(fetchOffset.getComponent(), cc.xywh(3, 9, 3, 1));
-        builder.addLabel("Fetch Limit, Rows:", cc.xy(1, 11));
-        builder.add(fetchLimit.getComponent(), cc.xywh(3, 11, 3, 1));
-        builder.addLabel("Page Size:", cc.xy(1, 13));
-        builder.add(pageSize.getComponent(), cc.xywh(3, 13, 3, 1));
-        return builder;
-    }
 
     protected void initView() {
         super.initView();
         this.setLayout(new BorderLayout());
-        this.add(createPanelBuilder().getPanel(), BorderLayout.CENTER);
+        cacheGroupsLabel = new JLabel("Cache Group:");
+        this.add(getPanel(), BorderLayout.CENTER);
+    }
+
+    private JPanel getPanel() {
+        return FormBuilder.create()
+                .columns("right:max(80dlu;pref), 3dlu, left:max(10dlu;pref), "
+                        + "3dlu, left:max(37dlu;pref), 3dlu, fill:max(147dlu;pref)")
+                .rows("8*(p, 3dlu)")
+                .addSeparator("Select Properties").xywh(1, 1, 7, 1)
+                .add("Result Caching:").xy(1, 3)
+                .add(cacheStrategy).xyw(3, 3, 5)
+                .add(cacheGroupsLabel).xy(1, 7)
+                .add(cacheGroups.getComponent()).xyw(3, 7, 5)
+                .addLabel("Fetch Offset, Rows:").xy(1, 9)
+                .add(fetchOffset.getComponent()).xyw(3, 9, 3)
+                .addLabel("Fetch Limit, Rows:").xy(1, 11)
+                .add(fetchLimit.getComponent()).xyw(3, 11, 3)
+                .addLabel("Page Size:").xy(1, 13)
+                .add(pageSize.getComponent()).xyw(3, 13, 3)
+                .padding(Paddings.DIALOG)
+                .build();
     }
 }

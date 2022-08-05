@@ -19,14 +19,10 @@
 
 package org.apache.cayenne.modeler.dialog.db.gen;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
+import org.apache.cayenne.swing.components.TopBorder;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -39,13 +35,13 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.swing.components.TopBorder;
 
 /**
  * Wizard for generating the database from the data map.
@@ -99,24 +95,23 @@ public class DBGeneratorOptionsView extends JDialog {
                 sql,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED), BorderLayout.CENTER);
-        
+
         JPanel adapterPanel = new JPanel(new BorderLayout());
         adapterPanel.add(adapters);
 
-        CellConstraints cc = new CellConstraints();
-        PanelBuilder builder = new PanelBuilder(new FormLayout(
-                "fill:min(50dlu;pref):grow",
-                "p, 3dlu, p, 9dlu, p, 3dlu, p, 3dlu, p, 3dlu, fill:40dlu:grow"));
-        builder.addSeparator("Options", cc.xywh(1, 1, 1, 1));
-        builder.add(optionsPane, cc.xy(1, 3, "left,fill"));
-        builder.addSeparator("Adapter", cc.xywh(1, 5, 1, 1));
-        builder.add(adapterPanel, cc.xy(1, 7));
-        builder.addSeparator("Generated SQL", cc.xywh(1, 9, 1, 1));
-        builder.add(sqlTextPanel, cc.xy(1, 11));
-        builder.setBorder(BorderFactory
-                .createCompoundBorder(UIManager.getBorder("ToolBar.border"), Borders.DIALOG_BORDER));
+        JPanel panel = FormBuilder.create()
+                .columns("fill:min(50dlu;pref):grow")
+                .rows("p, 3dlu, p, 9dlu, p, 3dlu, p, 3dlu, p, 3dlu, fill:40dlu:grow")
+                .addSeparator("Options").xywh(1, 1, 1, 1)
+                .add(optionsPane).xy(1, 3, "left,fill")
+                .addSeparator("Adapter").xywh(1, 5, 1, 1)
+                .add(adapterPanel).xy(1, 7)
+                .addSeparator("Generated SQL").xywh(1, 9, 1, 1)
+                .add(sqlTextPanel).xy(1, 11)
+                .padding(Paddings.DIALOG)
+                .build();
 
-        tabs.addTab("SQL Options", builder.getPanel());
+        tabs.addTab("SQL Options", panel);
         tabs.addTab("Tables", new JScrollPane(
                 tables,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -179,7 +174,7 @@ public class DBGeneratorOptionsView extends JDialog {
     public JTextArea getSql() {
         return sql;
     }
-    
+
     public JComboBox<String> getAdapters() {
         return adapters;
     }

@@ -19,9 +19,8 @@
 
 package org.apache.cayenne.modeler.dialog.validator;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerFrame;
 import org.apache.cayenne.modeler.action.ValidateAction;
@@ -47,7 +46,6 @@ import java.util.List;
 
 /**
  * Dialog for displaying validation errors.
- * 
  */
 public class ValidatorDialog extends CayenneDialog {
 
@@ -103,26 +101,30 @@ public class ValidatorDialog extends CayenneDialog {
         problemsTable.setDefaultRenderer(ValidationFailure.class, new ValidationRenderer());
 
         // assemble
-        CellConstraints cc = new CellConstraints();
-        PanelBuilder builder = new PanelBuilder(new FormLayout("fill:200dlu:grow", "pref, 3dlu, fill:40dlu:grow"));
-
-        builder.setDefaultDialogBorder();
-
-        builder.addLabel("Click on any row below to go to the object that has a validation problem:", cc.xy(1, 1));
-        builder.add(new JScrollPane(problemsTable), cc.xy(1, 3));
-
         getRootPane().setDefaultButton(refreshButton);
-
-        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttons.add(closeButton);
-        buttons.add(refreshButton);
-
         getContentPane().setLayout(new BorderLayout());
-        getContentPane().add(builder.getPanel(), BorderLayout.CENTER);
-        getContentPane().add(buttons, BorderLayout.SOUTH);
+        getContentPane().add(getPanel(), BorderLayout.CENTER);
+        getContentPane().add(getButtonsPanel(), BorderLayout.SOUTH);
 
         // TODO: use preferences
         setSize(450, 350);
+    }
+
+    private JPanel getButtonsPanel() {
+        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttons.add(closeButton);
+        buttons.add(refreshButton);
+        return buttons;
+    }
+
+    private JPanel getPanel() {
+        return FormBuilder.create()
+                .columns("fill:200dlu:grow")
+                .rows("pref, 3dlu, fill:40dlu:grow")
+                .add("Click on any row below to go to the object that has a validation problem:").xy(1, 1)
+                .add(new JScrollPane(problemsTable)).xy(1, 3)
+                .padding(Paddings.DIALOG)
+                .build();
     }
 
     private void initController() {
@@ -195,7 +197,7 @@ public class ValidatorDialog extends CayenneDialog {
     class ValidationRenderer extends DefaultTableCellRenderer {
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                boolean hasFocus, int row, int column) {
+                                                       boolean hasFocus, int row, int column) {
 
             boolean error = false;
             if (value != null) {

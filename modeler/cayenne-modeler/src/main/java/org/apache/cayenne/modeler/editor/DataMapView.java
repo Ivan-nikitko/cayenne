@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.modeler.editor;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.event.DataMapEvent;
@@ -144,34 +144,42 @@ public class DataMapView extends JPanel {
         defaultLockType = new JCayenneCheckBox();
 
         // assemble
-        FormLayout layout = new FormLayout(
-                "right:70dlu, 3dlu, fill:180dlu, 3dlu, fill:120",
-                "");
-        DefaultFormBuilder builder = new DefaultFormBuilder(layout);
-        builder.setDefaultDialogBorder();
+        JPanel panel = FormBuilder.create()
+                .columns("right:70dlu, 3dlu, fill:180dlu, 3dlu, fill:120")
+                .rows("12*(p, 3dlu)")
+                .addSeparator("DataMap Configuration").xyw(1,  1, 5)
+                .add("DataMap Name:").xy(1, 3)
+                .add(name.getComponent()).xyw(3, 3,2)
+                .add("File:").xy(1, 5)
+                .add(location).xyw(3, 5,2)
+                .add("DataNode:").xy(1, 7)
+                .add(nodeSelector).xyw(3, 7,2)
+                .add("Quote SQL Identifiers:").xy(1, 9)
+                .add(quoteSQLIdentifiers).xyw(3, 9,2)
+                .add("Comment:").xy(1, 11)
+                .add(comment.getComponent()).xyw(3, 11,2)
 
-        builder.appendSeparator("DataMap Configuration");
-        builder.append("DataMap Name:", name.getComponent(), 2);
-        builder.append("File:", location, 3);
-        builder.append("DataNode:", nodeSelector, 2);
-        builder.append("Quote SQL Identifiers:", quoteSQLIdentifiers, 3);
-        builder.append("Comment:", comment.getComponent(), 2);
-
-        builder.appendSeparator("Entity Defaults");
-        builder.append("DB Catalog:", defaultCatalog.getComponent(), updateDefaultCatalog);
-        builder.append("DB Schema:", defaultSchema.getComponent(), updateDefaultSchema);
-        builder.append(
-                "Java Package:",
-                defaultPackage.getComponent(),
-                updateDefaultPackage);
-        builder.append(
-                "Custom Superclass:",
-                defaultSuperclass.getComponent(),
-                updateDefaultSuperclass);
-        builder.append("Optimistic Locking:", defaultLockType, updateDefaultLockType);
+                .addSeparator("Entity Defaults").xyw(1,  13, 5)
+                .add("DB Catalog:").xy(1, 15)
+                .add(defaultCatalog.getComponent()).xy(3, 15)
+                .add(updateDefaultCatalog).xy(5, 15)
+                .add("DB Schema:").xy(1, 17)
+                .add( defaultSchema.getComponent()).xy(3, 17)
+                .add(updateDefaultSchema).xy(5, 17)
+                .add("Java Package:").xy(1, 19)
+                .add( defaultPackage.getComponent()).xy(3, 19)
+                .add(updateDefaultPackage).xy(5, 19)
+                .add("Custom Superclass:").xy(1, 21)
+                .add( defaultSuperclass.getComponent()).xy(3, 21)
+                .add(updateDefaultSuperclass).xy(5, 21)
+                .add("Optimistic Locking:").xy(1, 23)
+                .add( defaultLockType).xy(3, 23)
+                .add(updateDefaultLockType).xy(5, 23)
+                .padding(Paddings.DIALOG)
+                .build();
 
         this.setLayout(new BorderLayout());
-        add(builder.getPanel(), BorderLayout.CENTER);
+        add(panel, BorderLayout.CENTER);
     }
 
     private void initController() {

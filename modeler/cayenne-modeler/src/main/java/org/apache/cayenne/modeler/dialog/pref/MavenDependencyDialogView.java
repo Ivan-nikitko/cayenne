@@ -19,19 +19,18 @@
 
 package org.apache.cayenne.modeler.dialog.pref;
 
-import java.awt.BorderLayout;
-import java.awt.Dialog;
-import java.awt.Frame;
-
-import javax.swing.JButton;
-import javax.swing.JTextField;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import org.apache.cayenne.modeler.util.CayenneDialog;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
+
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import java.awt.BorderLayout;
+import java.awt.Dialog;
+import java.awt.Frame;
 
 public class MavenDependencyDialogView extends CayenneDialog {
 
@@ -63,24 +62,19 @@ public class MavenDependencyDialogView extends CayenneDialog {
             artifactId = new JTextField(25);
             version = new JTextField(25);
 
-            CellConstraints cc = new CellConstraints();
-            PanelBuilder builder = new PanelBuilder(
-                    new FormLayout(
-                            "right:max(50dlu;pref), 3dlu, fill:min(100dlu;pref)",
-                            "p, 3dlu, p, 3dlu, p, 3dlu"
-                    ));
-            builder.setDefaultDialogBorder();
+            JPanel panel = FormBuilder.create()
+                    .columns("right:max(50dlu;pref), 3dlu, fill:min(100dlu;pref)")
+                    .rows("3*(p,3dlu)")
+                    .addLabel("Group id:").xy(1, 1)
+                    .add(groupId).xy(3, 1)
+                    .addLabel("Artifact id:").xy(1, 3)
+                    .add(artifactId).xy(3, 3)
+                    .addLabel("Version:").xy(1, 5)
+                    .add(version).xy(3, 5)
+                    .padding(Paddings.DIALOG)
+                    .build();
 
-            builder.addLabel("group id:", cc.xy(1, 1));
-            builder.add(groupId, cc.xy(3, 1));
-
-            builder.addLabel("artifact id:", cc.xy(1, 3));
-            builder.add(artifactId, cc.xy(3, 3));
-
-            builder.addLabel("version:", cc.xy(1, 5));
-            builder.add(version, cc.xy(3, 5));
-
-            getContentPane().add(builder.getPanel(), BorderLayout.NORTH);
+            getContentPane().add(panel, BorderLayout.NORTH);
         }
 
         {

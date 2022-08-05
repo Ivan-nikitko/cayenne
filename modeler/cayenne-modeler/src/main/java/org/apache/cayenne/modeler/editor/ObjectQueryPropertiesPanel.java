@@ -19,22 +19,20 @@
 
 package org.apache.cayenne.modeler.editor;
 
-import java.awt.BorderLayout;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
+import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.swing.components.JCayenneCheckBox;
 
 import javax.swing.JCheckBox;
-
-import org.apache.cayenne.swing.components.JCayenneCheckBox;
-import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.query.QueryMetadata;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
 
 /**
  * A panel that supports editing the properties of a query based on ObjEntity.
- * 
  */
 public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel {
 
@@ -44,37 +42,38 @@ public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel {
         super(mediator);
     }
 
+    @Override
     protected void initView() {
         super.initView();
         // create widgets
 
         dataRows = new JCayenneCheckBox();
+        cacheGroupsLabel = new JLabel("Cache Group:");
 
-        // assemble
-        CellConstraints cc = new CellConstraints();
-        FormLayout layout = new FormLayout(
-                "right:max(80dlu;pref), 3dlu, left:max(50dlu;pref), fill:max(150dlu;pref)",
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p");
-        PanelBuilder builder = new PanelBuilder(layout);
-        builder.setDefaultDialogBorder();
-        builder.addSeparator("", cc.xywh(1, 1, 4, 1));
-        builder.addLabel("Result Caching:", cc.xy(1, 3));
-        builder.add(cacheStrategy, cc.xywh(3, 3, 2, 1));
-        cacheGroupsLabel = builder.addLabel("Cache Group:", cc.xy(1, 7));
-        builder.add(cacheGroups.getComponent(), cc.xywh(3, 7, 2, 1));
-        builder.addLabel("Fetch Data Rows:", cc.xy(1, 9));
-        builder.add(dataRows, cc.xy(3, 9));
-        builder.addLabel("Fetch Offset, Rows:", cc.xy(1, 11));
-        builder.add(fetchOffset.getComponent(), cc.xy(3, 11));
-        builder.addLabel("Fetch Limit, Rows:", cc.xy(1, 13));
-        builder.add(fetchLimit.getComponent(), cc.xy(3, 13));
-        builder.addLabel("Page Size:", cc.xy(1, 15));
-        builder.add(pageSize.getComponent(), cc.xy(3, 15));
+        JPanel panel = FormBuilder.create()
+                .columns("right:max(80dlu;pref), 3dlu, left:max(50dlu;pref), fill:max(150dlu;pref)")
+                .rows("9*(p, 3dlu)")
+                .addSeparator("").xyw(1, 1, 4)
+                .addLabel("Result Caching:").xy(1, 3)
+                .add(cacheStrategy).xywh(3, 3, 2, 1)
+                .add(cacheGroupsLabel).xy(1, 7)
+                .add(cacheGroups.getComponent()).xywh(3, 7, 2, 1)
+                .add("Fetch Data Rows:").xy(1, 9)
+                .add(dataRows).xy(3, 9)
+                .add("Fetch Offset, Rows:").xy(1, 11)
+                .add(fetchOffset.getComponent()).xy(3, 11)
+                .add("Fetch Limit, Rows:").xy(1, 13)
+                .add(fetchLimit.getComponent()).xy(3, 13)
+                .add("Page Size:").xy(1, 15)
+                .add(pageSize.getComponent()).xy(3, 15)
+                .padding(Paddings.DIALOG)
+                .build();
 
         this.setLayout(new BorderLayout());
-        this.add(builder.getPanel(), BorderLayout.CENTER);
+        this.add(panel, BorderLayout.CENTER);
     }
 
+    @Override
     protected void initController() {
         super.initController();
 
@@ -88,6 +87,7 @@ public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel {
      * Updates the view from the current model state. Invoked when a currently displayed
      * query is changed.
      */
+    @Override
     public void initFromModel(QueryDescriptor query) {
         super.initFromModel(query);
 

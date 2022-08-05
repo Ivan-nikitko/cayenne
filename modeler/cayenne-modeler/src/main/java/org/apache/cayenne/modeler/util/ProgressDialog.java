@@ -19,9 +19,8 @@
 
 package org.apache.cayenne.modeler.util;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -37,13 +36,13 @@ import java.awt.FlowLayout;
 /**
  * A dialog rendering a progress bar. It is normally controlled by a subclass of
  * LongRunningTask.
- * 
  */
 public class ProgressDialog extends JDialog {
 
     protected JProgressBar progressBar;
     protected JLabel statusLabel;
     protected JButton cancelButton;
+    private JLabel messageLabel;
 
     public ProgressDialog(JFrame parent, String title, String message) {
         super(parent, title);
@@ -51,20 +50,12 @@ public class ProgressDialog extends JDialog {
     }
 
     private void init(String message) {
-        progressBar = new JProgressBar();
-        statusLabel = new JLabel(message, SwingConstants.LEFT);
-        JLabel messageLabel = new JLabel(message, SwingConstants.LEFT);
-        cancelButton = new JButton("Cancel");
+        this.progressBar = new JProgressBar();
+        this.statusLabel = new JLabel(message, SwingConstants.LEFT);
+        this.messageLabel = new JLabel(message, SwingConstants.LEFT);
+        this.cancelButton = new JButton("Cancel");
 
         // assemble
-        CellConstraints cc = new CellConstraints();
-        FormLayout layout = new FormLayout("fill:max(250dlu;pref)", "p, 3dlu, p, 3dlu, p");
-        PanelBuilder builder = new PanelBuilder(layout);
-        builder.setDefaultDialogBorder();
-
-        builder.add(messageLabel, cc.xy(1, 1));
-        builder.add(progressBar, cc.xy(1, 3));
-        builder.add(statusLabel, cc.xy(1, 5));
 
         getRootPane().setDefaultButton(cancelButton);
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -73,12 +64,23 @@ public class ProgressDialog extends JDialog {
         Container root = getContentPane();
         root.setLayout(new BorderLayout(5, 5));
 
-        root.add(builder.getPanel(), BorderLayout.CENTER);
+        root.add(getPanel(), BorderLayout.CENTER);
         root.add(buttons, BorderLayout.SOUTH);
 
         setResizable(false);
         pack();
         ModelerUtil.centerWindow(getOwner(), this);
+    }
+
+    private JPanel getPanel() {
+        return FormBuilder.create()
+                .columns("fill:max(250dlu;pref)")
+                .rows("3*(p, 3dlu)")
+                .add(messageLabel).xy(1, 1)
+                .add(progressBar).xy(1, 3)
+                .add(statusLabel).xy(1, 5)
+                .padding(Paddings.DIALOG)
+                .build();
     }
 
     public JButton getCancelButton() {

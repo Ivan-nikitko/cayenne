@@ -19,14 +19,8 @@
 
 package org.apache.cayenne.modeler.editor;
 
-import java.awt.BorderLayout;
-import java.util.Arrays;
-import java.util.Iterator;
-
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JCheckBox;
-import javax.swing.JTextField;
-
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
@@ -36,24 +30,27 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
-import org.apache.cayenne.swing.components.JCayenneCheckBox;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.ExpressionConvertor;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.modeler.util.ValidatorTextAdapter;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
+import org.apache.cayenne.swing.components.JCayenneCheckBox;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import java.awt.BorderLayout;
+import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  * A tabbed pane that contains editors for various SelectQuery parts.
- * 
  */
 public class SelectQueryMainTab extends BaseQueryMainTab {
 
@@ -105,28 +102,29 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
         properties = new ObjectQueryPropertiesPanel(mediator);
 
         // assemble
-        CellConstraints cc = new CellConstraints();
-        FormLayout layout = new FormLayout(
-                "right:max(80dlu;pref), 3dlu, fill:200dlu",
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p");
-        PanelBuilder builder = new PanelBuilder(layout);
-        builder.setDefaultDialogBorder();
-
-        builder.addSeparator("SelectQuery Settings", cc.xywh(1, 1, 3, 1));
-        builder.addLabel("Query Name:", cc.xy(1, 3));
-        builder.add(name.getComponent(), cc.xy(3, 3));
-        builder.addLabel("Query Root:", cc.xy(1, 5));
-        builder.add(queryRoot, cc.xy(3, 5));
-        builder.addLabel("Qualifier:", cc.xy(1, 7));
-        builder.add(qualifier.getComponent(), cc.xy(3, 7));
-        builder.addLabel("Distinct:", cc.xy(1, 9));
-        builder.add(distinct, cc.xy(3, 9));
-        builder.addLabel("Comment:", cc.xy(1, 11));
-        builder.add(comment.getComponent(), cc.xy(3, 11));
 
         this.setLayout(new BorderLayout());
-        this.add(builder.getPanel(), BorderLayout.NORTH);
+        this.add(getPanel(), BorderLayout.NORTH);
         this.add(properties, BorderLayout.CENTER);
+    }
+
+    private JPanel getPanel() {
+        return FormBuilder.create()
+                .columns("right:max(80dlu;pref), 3dlu, fill:200dlu")
+                .rows("6*(p, 3dlu)")
+                .addSeparator("SelectQuery Settings").xywh(1, 1, 3, 1)
+                .addLabel("Query Name:").xy(1, 3)
+                .add(name.getComponent()).xy(3, 3)
+                .addLabel("Query Root:").xy(1, 5)
+                .add(queryRoot).xy(3, 5)
+                .addLabel("Qualifier:").xy(1, 7)
+                .add(qualifier.getComponent()).xy(3, 7)
+                .addLabel("Distinct:").xy(1, 9)
+                .add(distinct).xy(3, 9)
+                .addLabel("Comment:").xy(1, 11)
+                .add(comment.getComponent()).xy(3, 11)
+                .padding(Paddings.DIALOG)
+                .build();
     }
 
     private void initController() {
@@ -186,7 +184,7 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
 
     @Override
     protected SelectQueryDescriptor getQuery() {
-        if(mediator.getCurrentQuery() == null) {
+        if (mediator.getCurrentQuery() == null) {
             return null;
         }
         return QueryDescriptor.SELECT_QUERY.equals(mediator.getCurrentQuery().getType())
@@ -211,12 +209,12 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
 
     /**
      * Method to create and check an expression
+     *
      * @param text String to be converted as Expression
      * @return Expression if a new expression was created, null otherwise.
      * @throws ValidationException if <code>text</code> can't be converted
      */
-    Expression createQualifier(String text) throws ValidationException
-    {
+    Expression createQualifier(String text) throws ValidationException {
         SelectQueryDescriptor query = getQuery();
         if (query == null) {
             return null;
@@ -232,15 +230,14 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
                  * Advanced checking. See CAY-888 #1
                  */
                 if (query.getRoot() instanceof Entity) {
-                    checkExpression((Entity<?,?,?>) query.getRoot(), exp);
+                    checkExpression((Entity<?, ?, ?>) query.getRoot(), exp);
                 }
 
                 return exp;
             }
 
             return null;
-        }
-        catch (IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
             // unparsable qualifier
             throw new ValidationException(ex.getMessage());
         }
@@ -252,11 +249,12 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
      * for real Entities.
      * Current implementation assures all attributes in expression are present in
      * Entity
+     *
      * @param root Root of a query
-     * @param ex Expression to check
+     * @param ex   Expression to check
      * @throws ValidationException when something's wrong
      */
-    static void checkExpression(Entity<?,?,?> root, Expression ex) throws ValidationException {
+    static void checkExpression(Entity<?, ?, ?> root, Expression ex) throws ValidationException {
         try {
             if (ex instanceof ASTPath) {
                 /*
@@ -273,12 +271,11 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
             if (ex != null) {
                 for (int i = 0; i < ex.getOperandCount(); i++) {
                     if (ex.getOperand(i) instanceof Expression) {
-                        checkExpression(root, (Expression)ex.getOperand(i));
+                        checkExpression(root, (Expression) ex.getOperand(i));
                     }
                 }
             }
-        }
-        catch (ExpressionException eex) {
+        } catch (ExpressionException eex) {
             throw new ValidationException(eex.getUnlabeledMessage());
         }
     }

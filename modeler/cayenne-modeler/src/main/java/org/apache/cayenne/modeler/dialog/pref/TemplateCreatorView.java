@@ -19,9 +19,8 @@
 
 package org.apache.cayenne.modeler.dialog.pref;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import org.apache.cayenne.swing.control.FileChooser;
 
 import javax.swing.JButton;
@@ -50,16 +49,6 @@ public class TemplateCreatorView extends JDialog {
         this.cancelButton = new JButton("Cancel");
 
         // assemble
-        CellConstraints cc = new CellConstraints();
-        PanelBuilder builder = new PanelBuilder(new FormLayout(
-                "right:pref, 3dlu, pref, 3dlu, pref:grow",
-                "p, 3dlu, p"));
-        builder.setDefaultDialogBorder();
-
-        builder.addLabel("Name:", cc.xy(1, 1));
-        builder.add(templateName, cc.xy(3, 1));
-        builder.addLabel("Template File:", cc.xy(1, 3));
-        builder.add(templateChooser, cc.xywh(3, 3, 3, 1));
 
         getRootPane().setDefaultButton(okButton);
 
@@ -68,8 +57,20 @@ public class TemplateCreatorView extends JDialog {
         buttons.add(okButton);
 
         getContentPane().setLayout(new BorderLayout());
-        getContentPane().add(builder.getPanel(), BorderLayout.CENTER);
+        getContentPane().add(getPanel(), BorderLayout.CENTER);
         getContentPane().add(buttons, BorderLayout.SOUTH);
+    }
+
+    private JPanel getPanel() {
+        return FormBuilder.create()
+                .columns("right:pref, 3dlu, pref, 3dlu, pref:grow")
+                .rows("p, 3dlu, p")
+                .addLabel("Name:").xy(1, 1)
+                .add(templateName).xy(3, 1)
+                .addLabel("Template File:").xy(1, 3)
+                .add(templateChooser).xyw(3, 3, 3)
+                .padding(Paddings.DIALOG)
+                .build();
     }
 
     public JButton getCancelButton() {

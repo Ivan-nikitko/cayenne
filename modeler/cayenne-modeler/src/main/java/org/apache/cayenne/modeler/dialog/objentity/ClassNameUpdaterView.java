@@ -20,8 +20,8 @@
 
 package org.apache.cayenne.modeler.dialog.objentity;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -49,14 +49,15 @@ public class ClassNameUpdaterView extends JDialog {
         cancelButton = new JButton("Cancel");
 
         getRootPane().setDefaultButton(updateButton);
+
         // assemble
-
-        FormLayout layout = new FormLayout("left:200dlu", "");
-        DefaultFormBuilder builder = new DefaultFormBuilder(layout);
-        builder.setDefaultDialogBorder();
-
-        builder.append("Update class name to match current entity name?");
-        builder.append(serverClass);
+        JPanel panel = FormBuilder.create()
+                .columns("left:200dlu")
+                .rows("p,3dlu,p")
+                .add("Update class name to match current entity name?").xy(1, 1)
+                .add(serverClass).xy(1, 3)
+                .padding(Paddings.DIALOG)
+                .build();
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttons.add(cancelButton);
@@ -64,7 +65,7 @@ public class ClassNameUpdaterView extends JDialog {
 
         Container contentPane = getContentPane();
         contentPane.setLayout(new BorderLayout());
-        contentPane.add(builder.getPanel(), BorderLayout.CENTER);
+        contentPane.add(panel, BorderLayout.CENTER);
         contentPane.add(buttons, BorderLayout.SOUTH);
 
         setTitle("Update Entity Class Name");

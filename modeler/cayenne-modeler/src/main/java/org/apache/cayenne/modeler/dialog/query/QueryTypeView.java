@@ -18,19 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.query;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import org.apache.cayenne.modeler.util.PanelFactory;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import java.awt.BorderLayout;
 
 public class QueryTypeView extends JDialog {
-    
+
     protected ButtonGroup buttonGroup;
     protected JRadioButton objectSelect;
     protected JRadioButton sqlSelect;
@@ -38,83 +38,71 @@ public class QueryTypeView extends JDialog {
     protected JRadioButton ejbqlSelect;
     protected JButton createButton;
     protected JButton cancelButton;
-    
+
     public QueryTypeView() {
         initView();
     }
-    
+
     private void initView() {
-        
-        // create widgets
-        ButtonGroup buttonGroup = new ButtonGroup();
+
+
+        initButtons();
+        this.setTitle("Select New Query Type");
+        this.setLayout(new BorderLayout());
+        this.add(getPanel(), BorderLayout.CENTER);
+        this.add(PanelFactory.createButtonPanel(new JButton[]{
+                cancelButton, createButton
+        }), BorderLayout.SOUTH);
+
+    }
+
+    private void initButtons() {
         objectSelect = new JRadioButton("Object Select Query");
         sqlSelect = new JRadioButton("SQLTemplate Query");
         procedureSelect = new JRadioButton("Stored Procedure Query");
         ejbqlSelect = new JRadioButton("EJBQL Query");
         objectSelect.setSelected(true);
-        buttonGroup.add(objectSelect);
-        buttonGroup.add(sqlSelect);
-        buttonGroup.add(procedureSelect);
-        buttonGroup.add(ejbqlSelect);
-
-        createButton = new JButton("Create"); 
+        createButton = new JButton("Create");
         createButton.setEnabled(true);
-
         cancelButton = new JButton("Cancel");
         cancelButton.setEnabled(true);
-
         getRootPane().setDefaultButton(createButton);
-
-        // assemble
-        CellConstraints cc = new CellConstraints();
-        FormLayout layout = new FormLayout(
-                "left:max(180dlu;pref)",
-                "p, 4dlu, p, 4dlu, p, 4dlu, p, 4dlu");
-        PanelBuilder builder = new PanelBuilder(layout);
-        builder.setDefaultDialogBorder();
-
-        builder.add(objectSelect, cc.xy(1, 1));
-        builder.add(sqlSelect, cc.xy(1, 3));
-        builder.add(procedureSelect, cc.xy(1, 5));
-        builder.add(ejbqlSelect, cc.xy(1, 7));
-
-        setLayout(new BorderLayout());
-        add(builder.getPanel(), BorderLayout.CENTER);
-
-        add(PanelFactory.createButtonPanel(new JButton[] {
-                cancelButton, createButton
-        }), BorderLayout.SOUTH);
-
-        setTitle("Select New Query Type");
     }
-    
-    public JButton getSaveButton()
-    {
+
+    private JPanel getPanel() {
+        return FormBuilder.create()
+                .columns("left:max(180dlu;pref)")
+                .rows("4*(p, 4dlu)")
+                .add(objectSelect).xy(1, 1)
+                .add(sqlSelect).xy(1, 3)
+                .add(procedureSelect).xy(1, 5)
+                .add(ejbqlSelect).xy(1, 7)
+                .padding(Paddings.DIALOG)
+                .build();
+    }
+
+
+    public JButton getSaveButton() {
         return createButton;
     }
-    
-    public JButton getCancelButton()
-    {
+
+    public JButton getCancelButton() {
         return cancelButton;
     }
-    
-    public JRadioButton getObjectSelect()
-    {
+
+    public JRadioButton getObjectSelect() {
         return objectSelect;
     }
-    
-    public JRadioButton getSqlSelect()
-    {
+
+    public JRadioButton getSqlSelect() {
         return sqlSelect;
     }
-    
-    public JRadioButton getProcedureSelect()
-    {
+
+    public JRadioButton getProcedureSelect() {
         return procedureSelect;
     }
-    
-    public JRadioButton getEjbqlSelect()
-    {
+
+    public JRadioButton getEjbqlSelect() {
         return ejbqlSelect;
     }
 }

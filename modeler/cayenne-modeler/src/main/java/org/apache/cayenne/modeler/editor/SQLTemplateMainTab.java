@@ -19,10 +19,8 @@
 
 package org.apache.cayenne.modeler.editor;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.RowSpec;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
@@ -39,6 +37,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
 import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -48,7 +47,6 @@ import java.util.Map;
 
 /**
  * A main panel for editing a SQLTemplate.
- * 
  */
 public class SQLTemplateMainTab extends BaseQueryMainTab {
 
@@ -97,24 +95,24 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
         properties = new SQLTemplateQueryPropertiesPanel(mediator);
 
         // assemble
-        CellConstraints cc = new CellConstraints();
-        FormLayout layout = new FormLayout(
-                "right:max(80dlu;pref), 3dlu, fill:max(200dlu;pref)",
-                "p, 3dlu, p, 3dlu, p, 3dlu, p");
-        PanelBuilder builder = new PanelBuilder(layout);
-        builder.setDefaultDialogBorder();
-
-        builder.addSeparator("SQLTemplate Settings", cc.xywh(1, 1, 3, 1));
-        builder.addLabel("Query Name:", cc.xy(1, 3));
-        builder.add(name.getComponent(), cc.xy(3, 3));
-        builder.addLabel("Comment:", cc.xy(1, 5));
-        builder.add(comment.getComponent(), cc.xy(3, 5));
-        builder.addLabel("Query Root:", cc.xy(1, 7));
-        builder.add(queryRoot, cc.xy(3, 7));
-
         this.setLayout(new BorderLayout());
-        this.add(builder.getPanel(), BorderLayout.NORTH);
+        this.add(getPanel(), BorderLayout.NORTH);
         this.add(properties, BorderLayout.CENTER);
+    }
+
+    private JPanel getPanel() {
+        return FormBuilder.create()
+                .columns("right:max(80dlu;pref), 3dlu, fill:max(200dlu;pref)")
+                .rows("4*(p, 3dlu)")
+                .addSeparator("SQLTemplate Settings").xywh(1, 1, 3, 1)
+                .add("Query Name:").xy(1, 3)
+                .add(name.getComponent()).xy(3, 3)
+                .add("Comment:").xy(1, 5)
+                .add(comment.getComponent()).xy(3, 5)
+                .add("Query Root:").xy(1, 7)
+                .add(queryRoot).xy(3, 7)
+                .padding(Paddings.DIALOG)
+                .build();
     }
 
     /**
@@ -207,7 +205,7 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
         }
 
         @Override
-        protected PanelBuilder createPanelBuilder() {
+        protected FormBuilder createPanelBuilder() {
             labelCase = Application.getWidgetFactory().createUndoableComboBox();
             labelCase.setRenderer(new LabelCapsRenderer());
 
@@ -216,17 +214,9 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
                 setQueryProperty(SQLTemplate.COLUMN_NAME_CAPITALIZATION_PROPERTY, value.name());
             });
 
-            PanelBuilder builder = super.createPanelBuilder();
-
-            RowSpec[] extraRows = RowSpec.decodeSpecs("3dlu, p");
-            for (RowSpec extraRow : extraRows) {
-                builder.appendRow(extraRow);
-            }
-
-            CellConstraints cc = new CellConstraints();
-            builder.addLabel("Row Label Case:", cc.xy(1, 17));
-            builder.add(labelCase, cc.xywh(3, 17, 5, 1));
-
+            FormBuilder builder = super.createPanelBuilder();
+            builder.addLabel("Row Label Case:").xy(1, 17);
+            builder.add(labelCase).xywh(3, 17, 5, 1);
             return builder;
         }
 
@@ -262,7 +252,7 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
         @Override
         protected void setFetchingDataObjects(boolean dataObjects) {
             super.setFetchingDataObjects(dataObjects);
-            if(!dataObjects) {
+            if (!dataObjects) {
                 setEntity(null);
             }
         }

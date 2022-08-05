@@ -26,7 +26,10 @@ import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
@@ -35,16 +38,12 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.query.QueryMetadata;
 
 /**
  * A panel that supports editing the properties a query not based on ObjEntity, but still
  * supporting DataObjects retrieval.
- * 
  */
 public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
 
@@ -55,6 +54,7 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
         super(mediator);
     }
 
+    @Override
     protected void initController() {
         super.initController();
         dataObjects.addItemListener(e -> setFetchingDataObjects(dataObjects.isSelected()));
@@ -65,32 +65,34 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
         });
     }
 
-    protected PanelBuilder createPanelBuilder() {
-        CellConstraints cc = new CellConstraints();
-        FormLayout layout = new FormLayout(
-                "right:max(80dlu;pref), 3dlu, left:max(10dlu;pref), "
-                        + "3dlu, left:max(37dlu;pref), 3dlu, fill:max(147dlu;pref)",
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p");
+    protected FormBuilder createPanelBuilder() {
 
-        PanelBuilder builder = new PanelBuilder(layout);
-        builder.setDefaultDialogBorder();
-        builder.addSeparator("Select Properties", cc.xywh(1, 1, 7, 1));
-        builder.addLabel("Result Caching:", cc.xy(1, 3));
-        builder.add(cacheStrategy, cc.xywh(3, 3, 5, 1));
-        cacheGroupsLabel = builder.addLabel("Cache Group:", cc.xy(1, 7));
-        builder.add(cacheGroups.getComponent(), cc.xywh(3, 7, 5, 1));
-        builder.addLabel("Fetch Data Objects:", cc.xy(1, 9));
-        builder.add(dataObjects, cc.xy(3, 9));
-        builder.add(entities, cc.xywh(5, 9, 3, 1));
-        builder.addLabel("Fetch Offset, Rows:", cc.xy(1, 11));
-        builder.add(fetchOffset.getComponent(), cc.xywh(3, 11, 3, 1));
-        builder.addLabel("Fetch Limit, Rows:", cc.xy(1, 13));
-        builder.add(fetchLimit.getComponent(), cc.xywh(3, 13, 3, 1));
-        builder.addLabel("Page Size:", cc.xy(1, 15));
-        builder.add(pageSize.getComponent(), cc.xywh(3, 15, 3, 1));
-        return builder;
+        this.cacheGroupsLabel = new JLabel("Cache Group:");
+        FormBuilder formBuilder = FormBuilder.create();
+        formBuilder.columns("right:max(80dlu;pref), 3dlu, left:max(10dlu;pref), "
+                        + "3dlu, left:max(37dlu;pref), 3dlu, fill:max(147dlu;pref)")
+                .rows("10*(p, 3dlu)")
+                .addSeparator("Select Properties").xyw(1, 1, 7)
+                .addLabel("Result Caching:").xy(1, 3)
+                .add(cacheStrategy).xywh(3, 3, 5, 1)
+                .addLabel("Cache Group:").xy(1, 7)
+                .add(cacheGroups.getComponent()).xyw(3, 7, 5)
+                .addLabel("Fetch Data Objects:").xy(1, 9)
+                .add(dataObjects).xy(3, 9)
+                .add(entities).xywh(5, 9, 3, 1)
+                .addLabel("Fetch Offset, Rows:").xy(1, 11)
+                .add(fetchOffset.getComponent()).xywh(3, 11, 3, 1)
+                .addLabel("Fetch Limit, Rows:").xy(1, 13)
+                .add(fetchLimit.getComponent()).xyw(3, 13, 3)
+                .addLabel("Page Size:").xy(1, 15)
+                .add(pageSize.getComponent()).xyw(3, 15, 3)
+                .padding(Paddings.DIALOG)
+                .build();
+        return formBuilder;
+
     }
 
+    @Override
     protected void initView() {
         super.initView();
 
@@ -109,6 +111,7 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
      * Updates the view from the current model state. Invoked when a currently displayed
      * query is changed.
      */
+    @Override
     public void initFromModel(QueryDescriptor query) {
         super.initFromModel(query);
 

@@ -19,19 +19,18 @@
 
 package org.apache.cayenne.modeler.editor;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.DomainEvent;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.swing.components.JCayenneCheckBox;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.DomainDisplayListener;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.pref.RenamedPreferences;
+import org.apache.cayenne.swing.components.JCayenneCheckBox;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
@@ -77,26 +76,21 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
         this.sharedCache = new JCayenneCheckBox();
 
         // assemble
-        CellConstraints cc = new CellConstraints();
-        FormLayout layout = new FormLayout(
-                "right:pref, 3dlu, fill:50dlu, 3dlu, fill:47dlu, 3dlu, fill:100",
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p");
-
-        PanelBuilder builder = new PanelBuilder(layout);
-        builder.setDefaultDialogBorder();
-
-        builder.addSeparator("DataDomain Configuration", cc.xywh(1, 1, 7, 1));
-        builder.addLabel("DataDomain Name:", cc.xy(1, 3));
-        builder.add(name.getComponent(), cc.xywh(3, 3, 5, 1));
-
-        builder.addLabel("Object Validation:", cc.xy(1, 5));
-        builder.add(objectValidation, cc.xy(3, 5));
-
-        builder.addLabel("Use Shared Cache:", cc.xy(1, 7));
-        builder.add(sharedCache, cc.xy(3, 7));
+        JPanel panel = FormBuilder.create()
+                .columns("right:pref, 3dlu, fill:100dlu")
+                .rows("4*(p, 3dlu)")
+                .addSeparator("DataDomain Configuration").xyw(1,1,3)
+                .add("DataDomain Name:").xy(1, 3)
+                .add(name.getComponent()).xy(3, 3)
+                .add("Object Validation:").xy(1, 5)
+                .add(objectValidation).xy(3, 5)
+                .add("Use Shared Cache:").xy(1, 7)
+                .add(sharedCache).xy(3, 7)
+                .padding(Paddings.DIALOG)
+                .build();
 
         this.setLayout(new BorderLayout());
-        this.add(builder.getPanel(), BorderLayout.CENTER);
+        this.add(panel, BorderLayout.CENTER);
     }
 
     protected void initController() {

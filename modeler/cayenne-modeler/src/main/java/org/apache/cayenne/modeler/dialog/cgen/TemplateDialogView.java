@@ -18,9 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.cgen;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import org.apache.cayenne.modeler.util.CayenneDialog;
 
 import javax.swing.JButton;
@@ -60,10 +59,10 @@ public class TemplateDialogView extends CayenneDialog {
 
     private void initPathes(String templatePath, String superTemplatePath) {
         this.missingPathes = new ArrayList<>();
-        if(templatePath != null) {
+        if (templatePath != null) {
             missingPathes.add(templatePath);
         }
-        if(superTemplatePath != null) {
+        if (superTemplatePath != null) {
             missingPathes.add(superTemplatePath);
         }
     }
@@ -79,24 +78,30 @@ public class TemplateDialogView extends CayenneDialog {
 
 
         // assemble
-        CellConstraints cc = new CellConstraints();
-        PanelBuilder builder = new PanelBuilder(new FormLayout("fill:200dlu:grow", "pref, 3dlu, fill:40dlu:grow"));
-
-        builder.setDefaultDialogBorder();
-
-        builder.addLabel("This templates are missing: ", cc.xy(1, 1));
-        builder.add(new JScrollPane(pathTable), cc.xy(1, 3));
-
-        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttons.add(useDefault);
-        buttons.add(addTemplate);
 
         getContentPane().setLayout(new BorderLayout());
-        getContentPane().add(builder.getPanel(), BorderLayout.CENTER);
-        getContentPane().add(buttons, BorderLayout.SOUTH);
+        getContentPane().add(getPanel(), BorderLayout.CENTER);
+        getContentPane().add(getButtonsPanel(), BorderLayout.SOUTH);
         pathTable.setModel(new MissingPathTableModel());
 
         setPreferredSize(new Dimension(450, 350));
+    }
+
+    private JPanel getButtonsPanel() {
+        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttons.add(useDefault);
+        buttons.add(addTemplate);
+        return buttons;
+    }
+
+    private JPanel getPanel() {
+        return FormBuilder.create()
+                .columns("fill:200dlu:grow")
+                .rows("pref, 3dlu, fill:40dlu:grow")
+                .addLabel("This templates are missing: ").xy(1, 1)
+                .add(new JScrollPane(pathTable)).xy(1, 3)
+                .padding(Paddings.DIALOG)
+                .build();
     }
 
     public JButton getUseDefault() {

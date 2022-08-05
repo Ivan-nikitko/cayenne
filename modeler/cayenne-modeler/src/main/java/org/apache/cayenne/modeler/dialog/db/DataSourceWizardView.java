@@ -19,17 +19,22 @@
 
 package org.apache.cayenne.modeler.dialog.db;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.pref.DBConnectionInfoEditor;
 import org.apache.cayenne.modeler.util.CayenneController;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 
 /**
+ *
  */
 public class DataSourceWizardView extends JDialog {
 
@@ -44,7 +49,7 @@ public class DataSourceWizardView extends JDialog {
 
     public DataSourceWizardView(CayenneController controller, String[] labels) {
         super(Application.getFrame());
-        
+
         this.dataSources = new JComboBox<>();
 
         this.configButton = new JButton("...");
@@ -55,22 +60,21 @@ public class DataSourceWizardView extends JDialog {
 
         getRootPane().setDefaultButton(okButton);
 
-        CellConstraints cc = new CellConstraints();
-        PanelBuilder builder = new PanelBuilder(new FormLayout(
-                "20dlu:grow, pref, 3dlu, fill:max(150dlu;pref), 3dlu, fill:20dlu",
-                "p"));
-        builder.setDefaultDialogBorder();
-
-        builder.addLabel("Saved DataSources:", cc.xy(2, 1));
-        builder.add(dataSources, cc.xy(4, 1));
-        builder.add(configButton, cc.xy(6, 1));
+        JPanel panel = FormBuilder.create()
+                .columns("20dlu:grow, pref, 3dlu, fill:max(150dlu;pref), 3dlu, fill:20dlu")
+                .rows("3*(p,3dlu)")
+                .add(new JLabel("Saved DataSources:")).xy(2, 1)
+                .add(dataSources).xy(4, 1)
+                .add(configButton).xy(6, 1)
+                .padding(Paddings.DIALOG)
+                .build();
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttons.add(cancelButton);
         buttons.add(okButton);
 
         getContentPane().setLayout(new BorderLayout());
-        getContentPane().add(builder.getPanel(), BorderLayout.NORTH);
+        getContentPane().add(panel, BorderLayout.NORTH);
         getContentPane().add(connectionInfo.getView(), BorderLayout.CENTER);
         getContentPane().add(buttons, BorderLayout.SOUTH);
 

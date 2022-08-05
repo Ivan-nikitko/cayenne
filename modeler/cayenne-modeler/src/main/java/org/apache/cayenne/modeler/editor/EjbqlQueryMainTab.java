@@ -18,22 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor;
 
-import java.awt.BorderLayout;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
-import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import java.awt.BorderLayout;
 
 
 public class EjbqlQueryMainTab extends JPanel{
@@ -66,21 +65,21 @@ public class EjbqlQueryMainTab extends JPanel{
         };
 
         properties = new EjbqlQueryPropertiesPanel(mediator);
+
         // assemble
-        CellConstraints cc = new CellConstraints();
-        FormLayout layout = new FormLayout(
-                "right:max(80dlu;pref), 3dlu, fill:max(200dlu;pref)",
-                "p, 3dlu, p, 3dlu, p");
-        PanelBuilder builder = new PanelBuilder(layout);
-        builder.setDefaultDialogBorder();
-        builder.addSeparator("EJBQL Query Settings", cc.xywh(1, 1, 3, 1));
-        builder.addLabel("Query Name:", cc.xy(1, 3));
-        builder.add(name.getComponent(), cc.xy(3, 3));
-        builder.addLabel("Comment:", cc.xy(1, 5));
-        builder.add(comment.getComponent(), cc.xy(3, 5));
+        JPanel panel = FormBuilder.create()
+                .columns("right:max(80dlu;pref), 3dlu, fill:max(200dlu;pref)")
+                .rows("3*(p,3dlu)")
+                .addSeparator("EJBQL Query Settings").xyw(1, 1, 3)
+                .add("Query Name:").xy(1, 3)
+                .add(name.getComponent()).xy(3, 3)
+                .add("Comment:").xy(1, 5)
+                .add(comment.getComponent()).xy(3, 5)
+                .padding(Paddings.DIALOG)
+                .build();
 
         this.setLayout(new BorderLayout());
-        this.add(builder.getPanel(), BorderLayout.NORTH);
+        this.add(panel, BorderLayout.NORTH);
         this.add(properties, BorderLayout.CENTER);
     }
 

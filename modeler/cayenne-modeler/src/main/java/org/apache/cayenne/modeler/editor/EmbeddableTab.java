@@ -18,15 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor;
 
-import java.awt.BorderLayout;
-import java.util.Collection;
-import java.util.Iterator;
-
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JToolBar;
-
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
@@ -46,8 +39,13 @@ import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.JToolBar;
+import java.awt.BorderLayout;
+import java.util.Collection;
+import java.util.Iterator;
 
 public class EmbeddableTab extends JPanel implements EmbeddableDisplayListener {
 
@@ -90,15 +88,17 @@ public class EmbeddableTab extends JPanel implements EmbeddableDisplayListener {
             }
         };
 
-        FormLayout layout = new FormLayout(
-                "right:50dlu, 3dlu, fill:150dlu, 3dlu, fill:100",
-                "");
-        DefaultFormBuilder builder = new DefaultFormBuilder(layout);
-        builder.setDefaultDialogBorder();
-        builder.append("Class Name:", className.getComponent(), 3);
-        builder.append("Comment:", comment.getComponent(), 3);
+        JPanel panel = FormBuilder.create()
+                .columns("right:50dlu, 3dlu, fill:250dlu")
+                .rows("2*(p, 3dlu)")
+                .add("Class Name:").xy(1, 1)
+                .add(className.getComponent()).xy(3,1)
+                .add("Comment:").xy(1, 3)
+                .add(comment.getComponent()).xy(3,3)
+                .padding(Paddings.DIALOG)
+                .build();
 
-        add(builder.getPanel(), BorderLayout.CENTER);
+        add(panel, BorderLayout.CENTER);
     }
 
     void setClassName(String newClassName) {

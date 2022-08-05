@@ -19,19 +19,8 @@
 
 package org.apache.cayenne.modeler.editor.dbentity;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.util.EventObject;
-import javax.swing.BorderFactory;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JToolBar;
-
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbAttribute;
@@ -54,6 +43,17 @@ import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
+
+import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.JToolBar;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.util.EventObject;
 
 /**
  * Detail view of the DbEntity properties.
@@ -155,24 +155,30 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, D
         pkGeneratorDetail.add(new PKCustomSequenceGeneratorPanel(mediator), PK_CUSTOM_SEQUENCE_GENERATOR);
 
         // assemble
-        FormLayout layout = new FormLayout("right:pref, 3dlu, fill:200dlu", "");
-        DefaultFormBuilder builder = new DefaultFormBuilder(layout);
-        builder.setDefaultDialogBorder();
-
-        builder.appendSeparator("DbEntity Configuration");
-        builder.append("DbEntity Name:", name.getComponent());
-        builder.append(catalogLabel, catalog.getComponent());
-        builder.append(schemaLabel, schema.getComponent());
-        builder.append("Qualifier:", qualifier.getComponent());
-        builder.append("Comment:", comment.getComponent());
-
-        builder.appendSeparator("Primary Key");
-        builder.append("PK Generation Strategy:", pkGeneratorType);
+        JPanel panel = FormBuilder.create()
+                .columns("right:90dlu, 3dlu, fill:200dlu")
+                .rows("8*(p, 3dlu)")
+                .addSeparator("DbEntity Configuration").xyw(1,1,3)
+                .add("DbEntity Name:").xy(1, 3)
+                .add(name.getComponent()).xy(3, 3)
+                .add(catalogLabel).xy(1, 5)
+                .add(catalog.getComponent()).xy(3, 5)
+                .add(schemaLabel).xy(1, 7)
+                .add(schema.getComponent()).xy(3, 7)
+                .add("Qualifier:").xy(1, 9)
+                .add(qualifier.getComponent()).xy(3, 9)
+                .add("Comment:").xy(1, 11)
+                .add(comment.getComponent()).xy(3, 11)
+                .addSeparator("Primary Key").xyw(1,13,3)
+                .add("PK Generation Strategy:").xy(1, 15)
+                .add(pkGeneratorType).xy(3, 15)
+                .padding(Paddings.DIALOG)
+                .build();
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
 
-        mainPanel.add(builder.getPanel(), BorderLayout.NORTH);
+        mainPanel.add(panel, BorderLayout.NORTH);
         mainPanel.add(pkGeneratorDetail, BorderLayout.CENTER);
 
         setLayout(new BorderLayout());
