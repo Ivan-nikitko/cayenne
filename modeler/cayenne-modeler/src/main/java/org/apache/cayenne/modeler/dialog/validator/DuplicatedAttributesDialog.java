@@ -18,9 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.validator;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
@@ -100,20 +99,22 @@ public class DuplicatedAttributesDialog extends CayenneDialog {
         attributesTable = new JTable();
 
         // assemble
-        CellConstraints cc = new CellConstraints();
-        PanelBuilder builder = new PanelBuilder(new FormLayout("fill:200dlu:grow", "pref, 3dlu, top:40dlu:grow"));
 
-        builder.setDefaultDialogBorder();
-
-        builder.addLabel("Select actions for duplicated attributes:", cc.xy(1, 1));
-        builder.add(new JScrollPane(attributesTable), cc.xy(1, 3));
+        //TODO check on GUI
+        JPanel panel = FormBuilder.create()
+                .columns("fill:200dlu:grow")
+                .rows("pref, 3dlu, top:40dlu:grow")
+                .add("Select actions for duplicated attributes:").xy(1, 1)
+                .add(new JScrollPane(attributesTable)).xy(1, 3)
+                .padding(Paddings.DIALOG)
+                .build();
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttons.add(cancelButton);
         buttons.add(proceedButton);
 
         getContentPane().setLayout(new BorderLayout());
-        getContentPane().add(builder.getPanel(), BorderLayout.CENTER);
+        getContentPane().add(panel, BorderLayout.CENTER);
         getContentPane().add(buttons, BorderLayout.SOUTH);
 
         // TODO: use preferences

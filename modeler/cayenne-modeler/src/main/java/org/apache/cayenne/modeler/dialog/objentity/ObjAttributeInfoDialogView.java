@@ -18,10 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.objentity;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.RowSpec;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneTable;
@@ -38,6 +36,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
@@ -87,7 +86,6 @@ public class ObjAttributeInfoDialogView extends JDialog {
 
         this.typeComboBox = Application.getWidgetFactory().createComboBox(ModelerUtil.getRegisteredTypeNames(), false);
         AutoCompletion.enable(typeComboBox, false, true);
-        typeComboBox.getRenderer();
 
         this.usedForLockingCheckBox = new JCheckBox();
         this.lazyCheckBox = new JCheckBox();
@@ -104,77 +102,13 @@ public class ObjAttributeInfoDialogView extends JDialog {
         setTitle("ObjAttribute Inspector");
         setLayout(new BorderLayout());
 
-        CellConstraints cc = new CellConstraints();
-        final PanelBuilder builder = new PanelBuilder(
-                new FormLayout(
-                        "right:max(50dlu;pref), 3dlu, 200dlu, 15dlu, right:max(30dlu;pref), 3dlu, 200dlu",
-                        "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 6dlu, p, 6dlu, p, 3dlu, fill:p:grow"));
-        builder.setDefaultDialogBorder();
-        builder.addSeparator("ObjAttribute Information", cc.xywh(1, 1, 7, 1));
+        configurePathBrowser();
+        JPanel buttonsPane = getButtonsPane();
+        JPanel flattenedAttributesPane = getFlattenedAttributesPane(buttonsPane);
+        JPanel embeddableAttributesPane = getEmbeddableAttributesPane();
+        configureTypeManagerPane(flattenedAttributesPane, embeddableAttributesPane);
 
-        builder.addLabel("Entity:", cc.xy(1, 3));
-        builder.add(sourceEntityLabel, cc.xywh(3, 3, 1, 1));
-
-        builder.addLabel("Attribute Name:", cc.xy(1, 5));
-        builder.add(attributeName, cc.xywh(3, 5, 1, 1));
-
-        builder.addLabel("Current Db Path:", cc.xy(1, 7));
-        builder.add(currentPathLabel, cc.xywh(3, 7, 5, 1));
-
-        builder.addLabel("Java Type:", cc.xy(1, 9));
-        builder.add(typeComboBox, cc.xywh(3, 9, 1, 1));
-
-        builder.addLabel("Used for locking:", cc.xy(1, 11));
-        builder.add(usedForLockingCheckBox, cc.xywh(3, 11, 1, 1));
-
-        builder.addLabel("Lazy loading:", cc.xy(1, 13));
-        builder.add(lazyCheckBox, cc.xywh(3, 13, 1, 1));
-
-        builder.addLabel("Comment:", cc.xy(1, 15));
-        builder.add(commentField, cc.xywh(3, 15, 1, 1));
-
-        builder.addSeparator("Mapping to DbAttributes", cc.xywh(1, 17, 7, 1));
-
-        typeManagerPane = new JPanel();
-        typeManagerPane.setLayout(new CardLayout());
-
-        final FormLayout fL = new FormLayout(
-                "493dlu ",
-                "p, 3dlu, fill:min(128dlu;pref):grow");
-
-        // panel for Flattened attribute
-        final PanelBuilder builderPathPane = new PanelBuilder(fL);
-
-        JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.LEADING));
-        buttonsPane.add(selectPathButton);
-
-        builderPathPane.add(buttonsPane, cc.xywh(1, 1, 1, 1));
-        pathBrowser = new ObjAttributePathBrowser(selectPathButton, saveButton);
-        pathBrowser.setPreferredColumnSize(BROWSER_CELL_DIM);
-        pathBrowser.setDefaultRenderer();
-        builderPathPane.add(new JScrollPane(
-                pathBrowser,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), cc.xywh(1, 3, 1, 1));
-
-        // panel for embeddable attribute
-        final FormLayout fLEmb = new FormLayout(
-                "493dlu ",
-                "fill:min(140dlu;pref):grow");
-
-        final PanelBuilder embeddablePane = new PanelBuilder(fLEmb);
-
-        embeddablePane.add(new JScrollPane(overrideAttributeTable,
-              JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-              JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED),
-              cc.xywh(1, 1, 1, 1));
-
-        typeManagerPane.add(builderPathPane.getPanel(), FLATTENED_PANEL);
-        typeManagerPane.add(embeddablePane.getPanel(), EMBEDDABLE_PANEL);
-
-        builder.add(typeManagerPane, cc.xywh(1, 19, 7, 1));
-
-        add(builder.getPanel(), BorderLayout.CENTER);
+        add(getPanel(), BorderLayout.CENTER);
 
         this.addComponentListener(new ComponentListener() {
 
@@ -186,12 +120,14 @@ public class ObjAttributeInfoDialogView extends JDialog {
             public void componentMoved(ComponentEvent e) {
             }
 
+            //TODO check on GUI
+            //TODO what is going on here?
             public void componentResized(ComponentEvent e) {
-                int delta = e.getComponent().getHeight() - height;
-                if (delta < 0) {
-                    fL.setRowSpec(3, RowSpec.decode("fill:min(10dlu;pref):grow"));
-                    fLEmb.setRowSpec(1, RowSpec.decode("fill:min(10dlu;pref):grow"));
-                }
+//                int delta = e.getComponent().getHeight() - height;
+//                if (delta < 0) {
+//                    fL.setRowSpec(3, RowSpec.decode("fill:min(10dlu;pref):grow"));
+//                    fLEmb.setRowSpec(1, RowSpec.decode("fill:min(10dlu;pref):grow"));
+//                }
             }
 
             public void componentShown(ComponentEvent e) {
@@ -203,10 +139,78 @@ public class ObjAttributeInfoDialogView extends JDialog {
         add(PanelFactory.createButtonPanel(buttons), BorderLayout.SOUTH);
     }
 
+    private JPanel getPanel() {
+        return FormBuilder.create()
+                .columns("right:max(50dlu;pref), 3dlu, 200dlu, 15dlu, right:max(30dlu;pref), 3dlu, 200dlu")
+                .rows("7*(p, 3dlu), p, 6dlu, p, 6dlu, p, 3dlu, fill:p:grow")
+                .addSeparator("ObjAttribute Information").xywh(1, 1, 7, 1)
+                .add("Entity:").xy(1, 3)
+                .add(sourceEntityLabel).xywh(3, 3, 1, 1)
+                .add("Attribute Name:").xy(1, 5)
+                .add(attributeName).xywh(3, 5, 1, 1)
+                .add("Current Db Path:").xy(1, 7)
+                .add(currentPathLabel).xywh(3, 7, 5, 1)
+                .add("Java Type:").xy(1, 9)
+                .add(typeComboBox).xywh(3, 9, 1, 1)
+                .add("Used for locking:").xy(1, 11)
+                .add(usedForLockingCheckBox).xywh(3, 11, 1, 1)
+                .add("Lazy loading:").xy(1, 13)
+                .add(lazyCheckBox).xywh(3, 13, 1, 1)
+                .add("Comment:").xy(1, 15)
+                .add(commentField).xy(3, 15)
+                .addSeparator("Mapping to DbAttributes").xyw(1, 17, 7)
+                .add(typeManagerPane).xyw(1, 19, 7)
+                .padding(Paddings.DIALOG)
+                .build();
+    }
+
+    private JPanel getButtonsPane() {
+        JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.LEADING));
+        buttonsPane.add(selectPathButton);
+        return buttonsPane;
+    }
+
+    private void configurePathBrowser() {
+        pathBrowser = new ObjAttributePathBrowser(selectPathButton, saveButton);
+        pathBrowser.setPreferredColumnSize(BROWSER_CELL_DIM);
+        pathBrowser.setDefaultRenderer();
+    }
+
+    private void configureTypeManagerPane(JPanel flattenedAttributesPane, JPanel embeddableAttributesPane) {
+        typeManagerPane = new JPanel();
+        typeManagerPane.setLayout(new CardLayout());
+        typeManagerPane.add(flattenedAttributesPane, FLATTENED_PANEL);
+        typeManagerPane.add(embeddableAttributesPane, EMBEDDABLE_PANEL);
+    }
+
+    private JPanel getEmbeddableAttributesPane() {
+        return FormBuilder.create()
+                .columns("493dlu ")
+                .rows("fill:min(140dlu;pref):grow")
+                .add(new JScrollPane(overrideAttributeTable,
+                        ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                        ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED)).xy(1, 1)
+                .padding(Paddings.DIALOG)
+                .build();
+    }
+
+    private JPanel getFlattenedAttributesPane(JPanel buttonsPane) {
+        return FormBuilder.create()
+                .columns("493dlu ")
+                .rows("p, 3dlu, fill:min(128dlu;pref):grow")
+                .add(buttonsPane).xy(1, 1)
+                .add(new JScrollPane(
+                        pathBrowser,
+                        ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                        ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED)).xy(1, 3)
+                .padding(Paddings.DIALOG)
+                .build();
+    }
+
     public CayenneTable getOverrideAttributeTable() {
         return overrideAttributeTable;
     }
-    
+
     public TableColumnPreferences getTablePreferences() {
         return tablePreferences;
     }

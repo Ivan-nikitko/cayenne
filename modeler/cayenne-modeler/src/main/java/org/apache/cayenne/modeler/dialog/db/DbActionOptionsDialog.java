@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.modeler.dialog.db;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import org.apache.cayenne.modeler.util.CayenneDialog;
 
 import javax.swing.DefaultComboBoxModel;
@@ -74,19 +74,24 @@ public class DbActionOptionsDialog extends CayenneDialog {
 
         getRootPane().setDefaultButton(selectButton);
 
-        FormLayout layout = new FormLayout(
-                "right:pref, 3dlu, fill:max(170dlu;pref):grow",
-                "");
-        DefaultFormBuilder builder = new DefaultFormBuilder(layout);
-        builder.setDefaultDialogBorder();
+        //TODO test on GUI
+        JPanel panel = FormBuilder.create()
+                .columns("right:pref, 3dlu, fill:max(170dlu;pref):grow")
+                .rows("2*(p, 3dlu)")
+                .add("Select Catalog:").xy(1, 1)
+                .add(catalogSelector).xy(3, 1)
+                .add("Select Schema:").xy(1, 3)
+                .add(schemaSelector).xy(3, 3)
+                .padding(Paddings.DIALOG)
+                .build();
 
         buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        initForm(builder);
+
         buttons.add(cancelButton);
         buttons.add(selectButton);
 
         getContentPane().setLayout(new BorderLayout());
-        getContentPane().add(builder.getPanel(), BorderLayout.CENTER);
+        getContentPane().add(panel, BorderLayout.CENTER);
         getContentPane().add(buttons, BorderLayout.SOUTH);
     }
 
@@ -127,11 +132,6 @@ public class DbActionOptionsDialog extends CayenneDialog {
                 }
             }
         }
-    }
-
-    protected void initForm(DefaultFormBuilder builder) {
-        catalogLabel = builder.append("Select Catalog:", catalogSelector, true);
-        schemaLabel = builder.append("Select Schema:", schemaSelector);
     }
 
     public int getChoice() {

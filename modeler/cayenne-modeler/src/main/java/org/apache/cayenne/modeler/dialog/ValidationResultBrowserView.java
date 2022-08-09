@@ -20,6 +20,10 @@
 
 package org.apache.cayenne.modeler.dialog;
 
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
+import org.apache.cayenne.modeler.Application;
+
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -31,12 +35,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.Application;
-
 /**
+ *
  */
 public class ValidationResultBrowserView extends JDialog {
 
@@ -60,17 +60,6 @@ public class ValidationResultBrowserView extends JDialog {
         errorsDisplay.setWrapStyleWord(true);
 
         // assemble
-        CellConstraints cc = new CellConstraints();
-        PanelBuilder builder = new PanelBuilder(new FormLayout(
-                "fill:min(50dlu;pref):grow",
-                "fill:20dlu, 9dlu, p, 3dlu, fill:40dlu:grow"));
-        builder.setDefaultDialogBorder();
-        builder.add(messageLabel, cc.xy(1, 1));
-        builder.addSeparator("Details", cc.xy(1, 3));
-        builder.add(new JScrollPane(
-                errorsDisplay,
-                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER), cc.xy(1, 5));
 
         getRootPane().setDefaultButton(closeButton);
 
@@ -79,7 +68,7 @@ public class ValidationResultBrowserView extends JDialog {
 
         JComponent container = (JComponent) getContentPane();
         container.setLayout(new BorderLayout());
-        container.add(builder.getPanel(), BorderLayout.CENTER);
+        container.add(getPanel(), BorderLayout.CENTER);
         container.add(buttons, BorderLayout.SOUTH);
 
         // update top label bg
@@ -88,6 +77,20 @@ public class ValidationResultBrowserView extends JDialog {
         // we need the right preferred size so that dialog "pack()" produces decent
         // default size...
         container.setPreferredSize(new Dimension(450, 270));
+    }
+//    TODO need to be check on GUI
+    private JPanel getPanel() {
+        return FormBuilder.create()
+                .columns("fill:min(50dlu;pref):grow")
+                .rows("fill:20dlu, 9dlu, p, 3dlu, fill:40dlu:grow")
+                .add(messageLabel).xy(1, 1)
+                .addSeparator("Details").xy(1, 3)
+                .add(new JScrollPane(
+                        errorsDisplay,
+                        ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                        ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER)).xy(1, 5)
+                .padding(Paddings.DIALOG)
+                .build();
     }
 
     public JButton getCloseButton() {

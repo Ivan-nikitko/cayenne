@@ -19,14 +19,12 @@
 
 package org.apache.cayenne.modeler.dialog.objentity;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -50,14 +48,14 @@ public class EntitySyncDialog extends JDialog {
 
         // assemble
 
-        FormLayout layout = new FormLayout("pref, 3dlu, pref", "p, 3dlu");
-        PanelBuilder builder = new PanelBuilder(layout);
-        builder.setDefaultDialogBorder();
-
-        CellConstraints cc = new CellConstraints();
-        builder.add(removeFKs, cc.xy(1, 1));
-        builder.add(new JLabel("Remove Object Attributes mapped on Foreign Keys?"), cc
-                .xy(3, 1));
+        //TODO Check on GUI
+        JPanel panel = FormBuilder.create()
+                .columns("pref, 3dlu, pref")
+                .rows("2*(p, 3dlu)")
+                .add(removeFKs).xy(1, 1)
+                .add("Remove Object Attributes mapped on Foreign Keys?").xy(3,1)
+                .padding(Paddings.DIALOG)
+                .build();
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttons.add(cancelButton);
@@ -65,7 +63,7 @@ public class EntitySyncDialog extends JDialog {
 
         Container contentPane = getContentPane();
         contentPane.setLayout(new BorderLayout());
-        contentPane.add(builder.getPanel(), BorderLayout.CENTER);
+        contentPane.add(panel, BorderLayout.CENTER);
         contentPane.add(buttons, BorderLayout.SOUTH);
 
         setTitle("Synchronize ObjEntity with DbEntity");

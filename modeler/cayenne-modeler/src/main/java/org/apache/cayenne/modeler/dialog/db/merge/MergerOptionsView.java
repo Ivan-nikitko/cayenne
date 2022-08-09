@@ -19,14 +19,11 @@
 
 package org.apache.cayenne.modeler.dialog.db.merge;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.swing.components.TopBorder;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -36,7 +33,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
@@ -58,7 +54,7 @@ public class MergerOptionsView extends JDialog {
 
     public MergerOptionsView(Component tables) {
         super(Application.getFrame());
-        
+
         // create widgets
         this.generateButton = new JButton("Migrate");
         getRootPane().setDefaultButton(generateButton);
@@ -79,21 +75,20 @@ public class MergerOptionsView extends JDialog {
                 sql,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED), BorderLayout.CENTER);
-
-        CellConstraints cc = new CellConstraints();
-        PanelBuilder builder = new PanelBuilder(new FormLayout(
-                "fill:min(50dlu;pref):grow",
-                "p, 9dlu, p, 3dlu, fill:40dlu:grow"));
-        builder.addSeparator("Generated SQL", cc.xywh(1, 3, 1, 1));
-        builder.add(sqlTextPanel, cc.xy(1, 5));
-        builder.setBorder(BorderFactory
-                .createCompoundBorder(UIManager.getBorder("ToolBar.border"), Borders.DIALOG_BORDER));
+        //TODO check on GUI
+        JPanel panel = FormBuilder.create()
+                .columns("fill:min(50dlu;pref):grow")
+                .rows("p, 9dlu, p, 3dlu, fill:40dlu:grow")
+                .addSeparator("Generated SQL").xywh(1, 3, 1, 1)
+                .add(sqlTextPanel).xy(1, 5)
+                .padding(Paddings.DIALOG)
+                .build();
 
         tabs.addTab("Operations", new JScrollPane(
                 tables,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED));
-        tabs.addTab("Generated SQL", builder.getPanel());
+        tabs.addTab("Generated SQL", panel);
 
         // we need the right preferred size so that dialog "pack()" produces decent
         // default size...

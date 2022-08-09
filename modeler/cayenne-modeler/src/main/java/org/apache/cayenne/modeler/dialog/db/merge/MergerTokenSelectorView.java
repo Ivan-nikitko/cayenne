@@ -19,8 +19,9 @@
 
 package org.apache.cayenne.modeler.dialog.db.merge;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
+import com.jgoodies.forms.builder.ButtonBarBuilder;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -28,13 +29,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.factories.ButtonBarFactory;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 
 /**
+ *
  */
 public class MergerTokenSelectorView extends JPanel {
 
@@ -64,26 +63,27 @@ public class MergerTokenSelectorView extends JPanel {
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new BorderLayout());
         topPanel.add(checkAllPanel, BorderLayout.WEST);
-        topPanel.add(ButtonBarFactory.buildRightAlignedBar(reverseAll), BorderLayout.EAST);
+        topPanel.add(ButtonBarBuilder.create().build(), BorderLayout.EAST);
 
         tokens = new JTable();
         tokens.setRowHeight(25);
         tokens.setRowMargin(3);
 
-        CellConstraints cc = new CellConstraints();
-        PanelBuilder builder = new PanelBuilder(new FormLayout(
-                "fill:min(50dlu;pref):grow",
-                "p, 3dlu, fill:40dlu:grow"));
-        builder.setDefaultDialogBorder();
-        builder.addSeparator("Select Operations", cc.xy(1, 1));
-        builder.add(new JScrollPane(
-                tokens,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), cc.xy(1, 3));
+        //TODO check on GUI
+        JPanel panel = FormBuilder.create()
+                .columns("fill:min(50dlu;pref):grow")
+                .rows("p, 3dlu, fill:40dlu:grow")
+                .addSeparator("Select Operations").xy(1, 1)
+                .add(new JScrollPane(
+                        tokens,
+                        JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                        JScrollPane.HORIZONTAL_SCROLLBAR_NEVER)).xy(1, 3)
+                .padding(Paddings.DIALOG)
+                .build();
 
         setLayout(new BorderLayout());
         add(topPanel, BorderLayout.NORTH);
-        add(builder.getPanel(), BorderLayout.CENTER);
+        add(panel, BorderLayout.CENTER);
     }
 
     public JTable getTokens() {
@@ -93,7 +93,7 @@ public class MergerTokenSelectorView extends JPanel {
     public JCheckBox getCheckAll() {
         return checkAll;
     }
-    
+
     public JButton getReverseAll() {
         return reverseAll;
     }
