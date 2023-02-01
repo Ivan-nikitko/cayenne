@@ -20,6 +20,7 @@
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.dbsync.xml.DbImportTags;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
@@ -40,6 +41,9 @@ public class ExcludeTable extends PatternParam implements XMLSerializable {
 
     @Override
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-        encoder.simpleTag("excludeTable", this.getPattern());
+        encoder.start(DbImportTags.EXCLUDE_TABLE_TAG)
+                .attribute(DbImportTags.PINNED, this.isPinned())
+                .cdata(this.getPattern())
+                .end();
     }
 }

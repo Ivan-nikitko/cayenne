@@ -20,6 +20,7 @@
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.dbsync.xml.DbImportTags;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
@@ -102,11 +103,12 @@ public class IncludeTable extends PatternParam implements XMLSerializable {
 
     @Override
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-        encoder.start("includeTable")
-            .simpleTag("name", this.getPattern())
-            .nested(this.getIncludeColumns(), delegate)
-            .nested(this.getExcludeColumns(), delegate)
-        .end();
+        encoder.start(DbImportTags.INCLUDE_TABLE_TAG)
+                .attribute(DbImportTags.PINNED, this.isPinned())
+                .simpleTag(DbImportTags.NAME_TAG, this.getPattern())
+                .nested(this.getIncludeColumns(), delegate)
+                .nested(this.getExcludeColumns(), delegate)
+                .end();
     }
 
     @Override

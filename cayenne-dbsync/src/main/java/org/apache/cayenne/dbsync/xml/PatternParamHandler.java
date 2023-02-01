@@ -21,79 +21,74 @@ package org.apache.cayenne.dbsync.xml;
 
 import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
+import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeProcedure;
+import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.FilterContainer;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
-import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
+import org.apache.cayenne.dbsync.reverse.dbimport.IncludeProcedure;
 import org.apache.cayenne.dbsync.reverse.dbimport.PatternParam;
 import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
 
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 /**
- * @since 4.1
+ * @since 5.0
  */
-class IncludeTableHandler extends PatternParamHandler {
-    private IncludeTable includeTable;
+class PatternParamHandler extends NamespaceAwareNestedTagHandler {
 
-    IncludeTableHandler(NamespaceAwareNestedTagHandler parentHandler, FilterContainer container) {
-        super(parentHandler, container);
+    protected boolean isPinned;
+
+    protected final FilterContainer container;
+
+    PatternParamHandler(NamespaceAwareNestedTagHandler parentHandler, FilterContainer container) {
+        super(parentHandler);
+        this.container = container;
+        this.isPinned = false;
     }
 
     @Override
-    protected boolean processElement(String namespaceURI, String localName, Attributes attributes) {
+    protected boolean processElement(String namespaceURI, String localName, Attributes attributes) throws SAXException {
         isPinned = isPinned(attributes);
-        switch (localName) {
-            case DbImportTags.INCLUDE_TABLE_TAG:
-                createIncludeTable();
-                return true;
-        }
-        return false;
+        return true;
     }
 
     @Override
     protected boolean processCharData(String localName, String data) {
         switch (localName) {
-            case DbImportTags.NAME_TAG:
-                createIncludeTableName(data);
+            case DbImportTags.EXCLUDE_TABLE_TAG:
+                createPatternParam(data, ExcludeTable::new, FilterContainer::addExcludeTable);
                 break;
             case DbImportTags.INCLUDE_COLUMN_TAG:
-                createColumn(data, IncludeColumn::new, IncludeTable::addIncludeColumn);
+                createPatternParam(data, IncludeColumn::new, FilterContainer::addIncludeColumn);
                 break;
             case DbImportTags.EXCLUDE_COLUMN_TAG:
-                createColumn(data, ExcludeColumn::new, IncludeTable::addExcludeColumn);
+                createPatternParam(data, ExcludeColumn::new, FilterContainer::addExcludeColumn);
+                break;
+            case DbImportTags.INCLUDE_PROCEDURE_TAG:
+                createPatternParam(data, IncludeProcedure::new, FilterContainer::addIncludeProcedure);
+                break;
+            case DbImportTags.EXCLUDE_PROCEDURE_TAG:
+                createPatternParam(data, ExcludeProcedure::new, FilterContainer::addExcludeProcedure);
                 break;
         }
         return true;
     }
 
-    private void createIncludeTableName(String includeTableName) {
-        if (includeTableName.trim().isEmpty()) {
-            return;
-        }
-
-        if (includeTable == null) {
-            createIncludeTable();
-        }
-
-        if (includeTable != null) {
-            includeTable.setName(includeTableName);
-        }
-    }
-
-    private void createIncludeTable() {
-        includeTable = new IncludeTable();
-        includeTable.setPinned(isPinned);
-        container.addIncludeTable(includeTable);
-    }
-
-    private   <T extends PatternParam> void createColumn(String pattern,
+    protected <T extends PatternParam> void createPatternParam(String pattern,
                                                                Function<String, T> paramConstructor,
-                                                               BiConsumer<IncludeTable, T> addParam) {
-        if (!pattern.trim().isEmpty() && includeTable != null) {
+                                                               BiConsumer<FilterContainer, T> addParam) {
+        if (!pattern.trim().isEmpty() && container != null) {
             T param = paramConstructor.apply(pattern);
             param.setPinned(isPinned);
-            addParam.accept(includeTable, param);
+            addParam.accept(container, param);
         }
     }
+
+    protected boolean isPinned(Attributes attributes) {
+        return Objects.equals(attributes.getValue(DbImportTags.PINNED), "true");
+    }
+
 }
