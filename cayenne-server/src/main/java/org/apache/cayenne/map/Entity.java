@@ -22,6 +22,7 @@ package org.apache.cayenne.map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
+import org.apache.cayenne.map.relationship.DbRelationship;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.XMLSerializable;
@@ -218,6 +219,10 @@ public abstract class Entity<E extends Entity<E, A, R>, A extends Attribute<E, A
         E sourceEntity = (E) this;
         relationship.setSourceEntity(sourceEntity);
     }
+
+    public void addRelationship(DbRelationship dbRelationship) {
+    }
+
 
     /**
      *  Removes a relationship named <code>attrName</code>.

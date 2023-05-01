@@ -30,6 +30,7 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.relationship.DbJoin;
 
 /**
  * A visitor interface for implementing operations on different types of
@@ -66,4 +67,8 @@ public interface ConfigurationNodeVisitor<T> {
     T visitProcedureParameter(ProcedureParameter parameter);
 
     T visitQuery(QueryDescriptor query);
+
+    T visitDbRelationship(org.apache.cayenne.map.relationship.DbRelationship relationship);
+
+    T visitDbJoin(DbJoin dbJoin);
 }

@@ -31,6 +31,7 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.relationship.DbJoin;
 
 /**
  * @since 4.1
@@ -92,6 +93,11 @@ public class EmptyConfigurationNodeVisitor implements ConfigurationNodeVisitor<V
     }
 
     @Override
+    public Void visitDbRelationship(org.apache.cayenne.map.relationship.DbRelationship relationship) {
+        return null;
+    }
+
+    @Override
     public Void visitProcedure(Procedure procedure) {
         return null;
     }
@@ -103,6 +109,11 @@ public class EmptyConfigurationNodeVisitor implements ConfigurationNodeVisitor<V
 
     @Override
     public Void visitQuery(QueryDescriptor query) {
+        return null;
+    }
+
+    @Override
+    public Void visitDbJoin(DbJoin dbJoin) {
         return null;
     }
 }

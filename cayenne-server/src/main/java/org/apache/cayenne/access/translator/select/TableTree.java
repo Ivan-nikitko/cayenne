@@ -64,6 +64,10 @@ class TableTree {
         tableNodes.put(path, node);
     }
 
+    void addJoinTable(String path, org.apache.cayenne.map.relationship.DbRelationship relationship, JoinType joinType) {
+
+    }
+
     String aliasForPath(String attributePath) {
         if(Util.isEmptyString(attributePath)) {
             return rootNode.getTableAlias();

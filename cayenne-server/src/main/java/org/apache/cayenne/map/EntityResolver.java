@@ -68,7 +68,7 @@ import org.slf4j.LoggerFactory;
 public class EntityResolver implements MappingNamespace, Serializable {
 
     protected static final Logger logger = LoggerFactory.getLogger(EntityResolver.class);
-    protected static AtomicLong incrementer = new AtomicLong();
+    public static AtomicLong incrementer = new AtomicLong();
 
     protected static final Map<LifecycleEvent, Class<? extends Annotation>> LIFECYCLE_EVENT_MAP;
     static {
