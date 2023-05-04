@@ -32,7 +32,7 @@ import org.apache.cayenne.util.Util;
 /**
  * @since 4.2
  */
-class TableTree {
+public class TableTree {
     /**
      * Tables mapped by db path it's spawned by.
      * Can be following:
@@ -64,7 +64,7 @@ class TableTree {
         tableNodes.put(path, node);
     }
 
-    void addJoinTable(String path, org.apache.cayenne.map.relationship.DbRelationship relationship, JoinType joinType) {
+    public void addJoinTable(String path, org.apache.cayenne.map.relationship.DbRelationship relationship, JoinType joinType) {
 
     }
 

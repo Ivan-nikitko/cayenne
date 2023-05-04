@@ -106,7 +106,7 @@ public class TranslatorContext implements SQLGenerationContext {
     private SQLResult sqlResult;
     private EntityResult rootEntityResult;
 
-    TranslatorContext(TranslatableQueryWrapper query, DbAdapter adapter, EntityResolver resolver, TranslatorContext parentContext) {
+    public TranslatorContext(TranslatableQueryWrapper query, DbAdapter adapter, EntityResolver resolver, TranslatorContext parentContext) {
         this.query = query;
         this.adapter = adapter;
         this.resolver = resolver;
@@ -156,7 +156,7 @@ public class TranslatorContext implements SQLGenerationContext {
         return bindings;
     }
 
-    TableTree getTableTree() {
+    public TableTree getTableTree() {
         return tableTree;
     }
 
