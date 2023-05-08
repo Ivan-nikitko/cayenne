@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
-public class DbJoinIT {
+public class DbJoinCodeExamples {
 
 
     public static final char OUTER_JOIN_INDICATOR = '+';
