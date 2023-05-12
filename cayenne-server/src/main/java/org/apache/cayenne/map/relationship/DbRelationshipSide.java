@@ -16,7 +16,7 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.util.XMLEncoder;
 
-public class DbRelationshipSide extends Relationship implements ConfigurationNode {
+public class DbRelationshipSide extends org.apache.cayenne.map.DbRelationship implements ConfigurationNode {
 
     private DbRelationship dbRelationship;
     private RelationshipDirection direction;

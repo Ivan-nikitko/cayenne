@@ -30,6 +30,7 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.relationship.DbRelationshipSide;
 
 /**
  * A {@link ConfigurationNodeVisitor} that does nothing, used as a convenience superclass
@@ -97,4 +98,17 @@ public abstract class BaseConfigurationNodeVisitor<T> implements
     public T visitQuery(QueryDescriptor query) {
         throw new UnsupportedOperationException("Not implemented for Query");
     }
+
+    public T visitDbRelationship(DbRelationshipSide relationship) {
+        throw new UnsupportedOperationException("Not implemented for DbRelationship");
+    }
+
+    public T visitDbJoin(org.apache.cayenne.map.relationship.DbRelationship dbRelationship) {
+        throw new UnsupportedOperationException("Not implemented for DbJoin");
+    }
+
+    public T visitDbRelationship(org.apache.cayenne.map.relationship.DbRelationship relationship) {
+        throw new UnsupportedOperationException("Not implemented for DbRelationship");
+    }
+
 }
