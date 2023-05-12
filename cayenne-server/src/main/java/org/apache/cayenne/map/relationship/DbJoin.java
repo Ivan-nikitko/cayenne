@@ -13,7 +13,7 @@ import org.apache.cayenne.util.XMLSerializable;
 
 public class DbJoin implements XMLSerializable, Serializable, ConfigurationNode {
 
-    protected DbRelationship[] dbRelationships;
+    protected DbRelationshipSide[] dbRelationshipSides;
 
     protected DbJoinCondition dbJoinCondition;
 
@@ -31,7 +31,7 @@ public class DbJoin implements XMLSerializable, Serializable, ConfigurationNode 
                      ToManySemantics toManySemantics,
                      DataMap dataMap) {
         this.dbJoinCondition = dbJoinCondition;
-        this.dbRelationships = new DbRelationship[2];
+        this.dbRelationshipSides = new DbRelationshipSide[2];
         this.dbEntities = dbEntities;
         this.names = names;
         this.toDependentPkSemantics = toDependentPkSemantics;
@@ -48,7 +48,7 @@ public class DbJoin implements XMLSerializable, Serializable, ConfigurationNode 
                                     RelationshipDirection relationshipDirection) {
         int index = relationshipDirection.ordinal();
         DbEntity srcEntity = mappingNamespace.getDbEntity(dbEntities[index]);
-        dbRelationships[index] = new DbRelationship(
+        dbRelationshipSides[index] = new DbRelationshipSide(
                 names[index],
                 srcEntity,
                 dbEntities[1 - index],
@@ -57,37 +57,37 @@ public class DbJoin implements XMLSerializable, Serializable, ConfigurationNode 
                 this,
                 relationshipDirection);
         if(names[index] == null) {
-            dbRelationships[index].setName("runtimeRelationship" +
+            dbRelationshipSides[index].setName("runtimeRelationship" +
                     EntityResolver.incrementer.getAndIncrement());
-            dbRelationships[index].setRuntime(true);
+            dbRelationshipSides[index].setRuntime(true);
             return;
         }
-        srcEntity.addRelationship(dbRelationships[index]);
+        srcEntity.addRelationship(dbRelationshipSides[index]);
     }
 
     public void setCondition(DbJoinCondition dbJoinCondition) {
         this.dbJoinCondition = dbJoinCondition;
     }
 
-    public DbRelationship getRelationhsip() {
-        return dbRelationships[RelationshipDirection.LEFT.ordinal()];
+    public DbRelationshipSide getRelationhsip() {
+        return dbRelationshipSides[RelationshipDirection.LEFT.ordinal()];
     }
 
     public DbJoinCondition getDbJoinCondition() {
         return dbJoinCondition;
     }
 
-    DbRelationship getReverseRelationship(RelationshipDirection direction) {
-        return dbRelationships[direction.getOppositeDirection().ordinal()];
+    DbRelationshipSide getReverseRelationship(RelationshipDirection direction) {
+        return dbRelationshipSides[direction.getOppositeDirection().ordinal()];
     }
 
     DbEntity getTargetEntity(RelationshipDirection direction) {
-        return dbRelationships[direction.getOppositeDirection().ordinal()]
+        return dbRelationshipSides[direction.getOppositeDirection().ordinal()]
                 .getSourceEntity();
     }
 
-    public DbRelationship getRelationship(RelationshipDirection relationshipDirection) {
-        return dbRelationships[relationshipDirection.ordinal()];
+    public DbRelationshipSide getRelationship(RelationshipDirection relationshipDirection) {
+        return dbRelationshipSides[relationshipDirection.ordinal()];
     }
 
     public String[] getDbEntities() {
@@ -110,8 +110,8 @@ public class DbJoin implements XMLSerializable, Serializable, ConfigurationNode 
         return dataMap;
     }
 
-    public DbRelationship[] getDbRelationships() {
-        return dbRelationships;
+    public DbRelationshipSide[] getDbRelationships() {
+        return dbRelationshipSides;
     }
 
     public void setDataMap(DataMap dataMap) {

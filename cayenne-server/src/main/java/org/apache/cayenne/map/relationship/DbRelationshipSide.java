@@ -16,28 +16,28 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.util.XMLEncoder;
 
-public class DbRelationship extends Relationship implements ConfigurationNode {
+public class DbRelationshipSide extends Relationship implements ConfigurationNode {
 
     private DbJoin dbJoin;
     private RelationshipDirection direction;
     private ColumnPairsHandler columnPairsHandler;
     protected boolean toDependentPK;
 
-    public DbRelationship() {
+    public DbRelationshipSide() {
         super();
     }
 
-    public DbRelationship(String name) {
+    public DbRelationshipSide(String name) {
         super(name);
     }
 
-    public DbRelationship(String name,
-                          DbEntity sourceEntity,
-                          String targetEntityName,
-                          boolean toMany,
-                          boolean toDepPk,
-                          DbJoin dbJoin,
-                          RelationshipDirection direction) {
+    public DbRelationshipSide(String name,
+                              DbEntity sourceEntity,
+                              String targetEntityName,
+                              boolean toMany,
+                              boolean toDepPk,
+                              DbJoin dbJoin,
+                              RelationshipDirection direction) {
         this.name = name;
         this.sourceEntity = sourceEntity;
         this.targetEntityName = targetEntityName;
@@ -67,7 +67,7 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
     }
 
     @Override
-    public DbRelationship getReverseRelationship() {
+    public DbRelationshipSide getReverseRelationship() {
         return dbJoin.getReverseRelationship(direction);
     }
 
