@@ -11,7 +11,7 @@ import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
-public class DbJoin implements XMLSerializable, Serializable, ConfigurationNode {
+public class DbRelationship implements XMLSerializable, Serializable, ConfigurationNode {
 
     protected DbRelationshipSide[] dbRelationshipSides;
 
@@ -24,12 +24,12 @@ public class DbJoin implements XMLSerializable, Serializable, ConfigurationNode 
 
     protected DataMap dataMap;
 
-    protected DbJoin(DbJoinCondition dbJoinCondition,
-                     String[] dbEntities,
-                     String[] names,
-                     ToDependentPkSemantics toDependentPkSemantics,
-                     ToManySemantics toManySemantics,
-                     DataMap dataMap) {
+    protected DbRelationship(DbJoinCondition dbJoinCondition,
+                             String[] dbEntities,
+                             String[] names,
+                             ToDependentPkSemantics toDependentPkSemantics,
+                             ToManySemantics toManySemantics,
+                             DataMap dataMap) {
         this.dbJoinCondition = dbJoinCondition;
         this.dbRelationshipSides = new DbRelationshipSide[2];
         this.dbEntities = dbEntities;
@@ -118,11 +118,11 @@ public class DbJoin implements XMLSerializable, Serializable, ConfigurationNode 
         this.dataMap = dataMap;
     }
 
-    public int compareTo(DbJoin dbJoin) {
+    public int compareTo(DbRelationship dbRelationship) {
         String o1Entity = getDbEntities()[0];
-        String o2Entity = dbJoin.getDbEntities()[0];
+        String o2Entity = dbRelationship.getDbEntities()[0];
         String o1Name = getNames()[0];
-        String o2Name = dbJoin.getNames()[0];
+        String o2Name = dbRelationship.getNames()[0];
         int compare = o1Entity.compareTo(o2Entity);
         return compare == 0 && o1Name != null && o2Name != null ?
                 o1Name.compareTo(o2Name) :

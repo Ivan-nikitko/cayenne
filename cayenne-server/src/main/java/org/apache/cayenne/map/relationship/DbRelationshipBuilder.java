@@ -3,7 +3,7 @@ package org.apache.cayenne.map.relationship;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.map.DataMap;
 
-public class DbJoinBuilder {
+public class DbRelationshipBuilder {
 
     protected DbJoinCondition dbJoinCondition;
     protected String[] dbEntities;
@@ -13,14 +13,14 @@ public class DbJoinBuilder {
 
     protected DataMap dataMap;
 
-    public DbJoinBuilder() {}
+    public DbRelationshipBuilder() {}
 
-    public DbJoinBuilder condition(DbJoinCondition dbJoinCondition) {
+    public DbRelationshipBuilder condition(DbJoinCondition dbJoinCondition) {
         this.dbJoinCondition = dbJoinCondition;
         return this;
     }
 
-    public DbJoinBuilder entities(String[] dbEntities) {
+    public DbRelationshipBuilder entities(String[] dbEntities) {
         if(dbEntities.length != 2) {
             throw new CayenneRuntimeException("Invalid number of relationship's entities");
         }
@@ -28,7 +28,7 @@ public class DbJoinBuilder {
         return this;
     }
 
-    public DbJoinBuilder names(String[] names) {
+    public DbRelationshipBuilder names(String[] names) {
         if(names.length != 2) {
             throw new CayenneRuntimeException("Invalid number of relationship's names");
         }
@@ -36,17 +36,17 @@ public class DbJoinBuilder {
         return this;
     }
 
-    public DbJoinBuilder toDepPkSemantics(ToDependentPkSemantics toDependentPkSemantics) {
+    public DbRelationshipBuilder toDepPkSemantics(ToDependentPkSemantics toDependentPkSemantics) {
         this.toDependentPkSemantics = toDependentPkSemantics;
         return this;
     }
 
-    public DbJoinBuilder toManySemantics(ToManySemantics toManySemantics) {
+    public DbRelationshipBuilder toManySemantics(ToManySemantics toManySemantics) {
         this.toManySemantics = toManySemantics;
         return this;
     }
 
-    public DbJoinBuilder dataMap(DataMap dataMap) {
+    public DbRelationshipBuilder dataMap(DataMap dataMap) {
         this.dataMap = dataMap;
         return this;
     }
@@ -75,7 +75,7 @@ public class DbJoinBuilder {
         return dataMap;
     }
 
-    public DbJoin build() {
+    public DbRelationship build() {
         if(dbJoinCondition == null ||
                 dbEntities == null ||
                 names == null ||
@@ -84,7 +84,7 @@ public class DbJoinBuilder {
                 dataMap == null) {
             throw new CayenneRuntimeException("Miss parameters to create dbJoin.");
         }
-        return new DbJoin(
+        return new DbRelationship(
                 dbJoinCondition,
                 dbEntities,
                 names,

@@ -18,7 +18,7 @@ import org.apache.cayenne.util.XMLEncoder;
 
 public class DbRelationshipSide extends Relationship implements ConfigurationNode {
 
-    private DbJoin dbJoin;
+    private DbRelationship dbRelationship;
     private RelationshipDirection direction;
     private ColumnPairsHandler columnPairsHandler;
     protected boolean toDependentPK;
@@ -36,16 +36,16 @@ public class DbRelationshipSide extends Relationship implements ConfigurationNod
                               String targetEntityName,
                               boolean toMany,
                               boolean toDepPk,
-                              DbJoin dbJoin,
+                              DbRelationship dbRelationship,
                               RelationshipDirection direction) {
         this.name = name;
         this.sourceEntity = sourceEntity;
         this.targetEntityName = targetEntityName;
         this.toMany = toMany;
         this.toDependentPK = toDepPk;
-        this.dbJoin = dbJoin;
+        this.dbRelationship = dbRelationship;
         this.direction = direction;
-        this.columnPairsHandler = dbJoin.getDbJoinCondition().accept(new ColumnPairsHandlerJoinVisitor());
+        this.columnPairsHandler = dbRelationship.getDbJoinCondition().accept(new ColumnPairsHandlerJoinVisitor());
     }
 
     public <T> T accept(DirectionalJoinVisitor<T> joinContentVisitor) {
@@ -59,7 +59,7 @@ public class DbRelationshipSide extends Relationship implements ConfigurationNod
 
     @Override
     public DbEntity getTargetEntity() {
-        return dbJoin.getTargetEntity(direction);
+        return dbRelationship.getTargetEntity(direction);
     }
 
     public String getTargetEntityName() {
@@ -68,7 +68,7 @@ public class DbRelationshipSide extends Relationship implements ConfigurationNod
 
     @Override
     public DbRelationshipSide getReverseRelationship() {
-        return dbJoin.getReverseRelationship(direction);
+        return dbRelationship.getReverseRelationship(direction);
     }
 
     @Override
@@ -246,8 +246,8 @@ public class DbRelationshipSide extends Relationship implements ConfigurationNod
         });
     }
 
-    public DbJoin getDbJoin() {
-        return dbJoin;
+    public DbRelationship getDbJoin() {
+        return dbRelationship;
     }
 
     public RelationshipDirection getDirection() {
@@ -263,7 +263,7 @@ public class DbRelationshipSide extends Relationship implements ConfigurationNod
     }
 
     public void updatePairsHandler() {
-        this.columnPairsHandler = dbJoin.getDbJoinCondition().accept(new ColumnPairsHandlerJoinVisitor());
+        this.columnPairsHandler = dbRelationship.getDbJoinCondition().accept(new ColumnPairsHandlerJoinVisitor());
     }
 
     @Override
