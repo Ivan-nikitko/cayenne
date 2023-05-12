@@ -1,10 +1,10 @@
 package org.apache.cayenne.map.relationship;
 
-public class SinglePairCondition extends DbJoinCondition {
+public class SingleColumnDbJoin extends DbJoin {
 
     private ColumnPair columnPair;
 
-    public SinglePairCondition(ColumnPair columnPair) {
+    public SingleColumnDbJoin(ColumnPair columnPair) {
         this.columnPair = columnPair;
     }
 

@@ -15,7 +15,7 @@ public class DbRelationship implements XMLSerializable, Serializable, Configurat
 
     protected DbRelationshipSide[] dbRelationshipSides;
 
-    protected DbJoinCondition dbJoinCondition;
+    protected DbJoin dbJoin;
 
     protected String[] dbEntities;
     protected String[] names;
@@ -24,13 +24,13 @@ public class DbRelationship implements XMLSerializable, Serializable, Configurat
 
     protected DataMap dataMap;
 
-    protected DbRelationship(DbJoinCondition dbJoinCondition,
+    protected DbRelationship(DbJoin dbJoin,
                              String[] dbEntities,
                              String[] names,
                              ToDependentPkSemantics toDependentPkSemantics,
                              ToManySemantics toManySemantics,
                              DataMap dataMap) {
-        this.dbJoinCondition = dbJoinCondition;
+        this.dbJoin = dbJoin;
         this.dbRelationshipSides = new DbRelationshipSide[2];
         this.dbEntities = dbEntities;
         this.names = names;
@@ -65,16 +65,16 @@ public class DbRelationship implements XMLSerializable, Serializable, Configurat
         srcEntity.addRelationship(dbRelationshipSides[index]);
     }
 
-    public void setCondition(DbJoinCondition dbJoinCondition) {
-        this.dbJoinCondition = dbJoinCondition;
+    public void setCondition(DbJoin dbJoin) {
+        this.dbJoin = dbJoin;
     }
 
     public DbRelationshipSide getRelationhsip() {
         return dbRelationshipSides[RelationshipDirection.LEFT.ordinal()];
     }
 
-    public DbJoinCondition getDbJoinCondition() {
-        return dbJoinCondition;
+    public DbJoin getDbJoinCondition() {
+        return dbJoin;
     }
 
     DbRelationshipSide getReverseRelationship(RelationshipDirection direction) {
@@ -143,7 +143,7 @@ public class DbRelationship implements XMLSerializable, Serializable, Configurat
                     .attribute("name", names[1])
                 .end();
 
-        dbJoinCondition.accept(new JoinVisitor<Void>() {
+        dbJoin.accept(new JoinVisitor<Void>() {
 
             @Override
             public Void visit(ColumnPair columnPair) {
@@ -183,7 +183,7 @@ public class DbRelationship implements XMLSerializable, Serializable, Configurat
         StringBuilder res = new StringBuilder("DbJoin : ");
         res.append(toManySemantics.name());
 
-        return dbJoinCondition.accept(new JoinVisitor<StringBuilder>() {
+        return dbJoin.accept(new JoinVisitor<StringBuilder>() {
 
             private StringBuilder build(ColumnPair columnPair) {
                 return res.append(" (")

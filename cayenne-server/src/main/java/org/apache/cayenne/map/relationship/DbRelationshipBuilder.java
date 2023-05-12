@@ -5,7 +5,7 @@ import org.apache.cayenne.map.DataMap;
 
 public class DbRelationshipBuilder {
 
-    protected DbJoinCondition dbJoinCondition;
+    protected DbJoin dbJoin;
     protected String[] dbEntities;
     protected String[] names;
     protected ToDependentPkSemantics toDependentPkSemantics;
@@ -15,8 +15,8 @@ public class DbRelationshipBuilder {
 
     public DbRelationshipBuilder() {}
 
-    public DbRelationshipBuilder condition(DbJoinCondition dbJoinCondition) {
-        this.dbJoinCondition = dbJoinCondition;
+    public DbRelationshipBuilder condition(DbJoin dbJoin) {
+        this.dbJoin = dbJoin;
         return this;
     }
 
@@ -67,8 +67,8 @@ public class DbRelationshipBuilder {
         return toDependentPkSemantics;
     }
 
-    public DbJoinCondition getDbJoinCondition() {
-        return dbJoinCondition;
+    public DbJoin getDbJoinCondition() {
+        return dbJoin;
     }
 
     public DataMap getDataMap() {
@@ -76,7 +76,7 @@ public class DbRelationshipBuilder {
     }
 
     public DbRelationship build() {
-        if(dbJoinCondition == null ||
+        if(dbJoin == null ||
                 dbEntities == null ||
                 names == null ||
                 toDependentPkSemantics == null ||
@@ -85,7 +85,7 @@ public class DbRelationshipBuilder {
             throw new CayenneRuntimeException("Miss parameters to create dbJoin.");
         }
         return new DbRelationship(
-                dbJoinCondition,
+                dbJoin,
                 dbEntities,
                 names,
                 toDependentPkSemantics,
