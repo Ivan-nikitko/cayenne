@@ -421,7 +421,7 @@ public class AshwoodEntitySorter implements EntitySorter {
 		}
 	}
 
-	private final static class ComponentRecord {
+	protected final static class ComponentRecord {
 
 		ComponentRecord(int index, Collection<DbEntity> component) {
 			this.index = index;
