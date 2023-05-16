@@ -13,7 +13,6 @@ import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.util.XMLEncoder;
 
 public class DbRelationshipSide extends org.apache.cayenne.map.DbRelationship implements ConfigurationNode {
@@ -66,8 +65,7 @@ public class DbRelationshipSide extends org.apache.cayenne.map.DbRelationship im
         return getTargetEntity().getName();
     }
 
-    @Override
-    public DbRelationshipSide getReverseRelationship() {
+    public DbRelationshipSide getReverseRelationshipSide() {
         return dbRelationship.getReverseRelationship(direction);
     }
 
@@ -160,7 +158,7 @@ public class DbRelationshipSide extends org.apache.cayenne.map.DbRelationship im
 
     public boolean isToMasterPK() {
         return !(isToMany() || isToDependentPK()) &&
-                getReverseRelationship().isToDependentPK();
+                getReverseRelationshipSide().isToDependentPK();
     }
 
     public boolean isSourceIndependentFromTargetChange() {

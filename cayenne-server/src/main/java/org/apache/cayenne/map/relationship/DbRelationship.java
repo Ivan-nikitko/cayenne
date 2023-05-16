@@ -69,7 +69,7 @@ public class DbRelationship implements XMLSerializable, Serializable, Configurat
         this.dbJoin = dbJoin;
     }
 
-    public DbRelationshipSide getRelationhsip() {
+    public DbRelationshipSide getRelationshipSide() {
         return dbRelationshipSides[RelationshipDirection.LEFT.ordinal()];
     }
 

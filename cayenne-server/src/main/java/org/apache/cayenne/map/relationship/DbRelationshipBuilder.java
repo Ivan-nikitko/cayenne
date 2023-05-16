@@ -15,7 +15,7 @@ public class DbRelationshipBuilder {
 
     public DbRelationshipBuilder() {}
 
-    public DbRelationshipBuilder condition(DbJoin dbJoin) {
+    public DbRelationshipBuilder join(DbJoin dbJoin) {
         this.dbJoin = dbJoin;
         return this;
     }

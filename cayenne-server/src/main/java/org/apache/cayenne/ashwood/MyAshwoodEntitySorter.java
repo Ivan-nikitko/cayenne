@@ -44,7 +44,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class MyAshwoodEntitySorter extends AshwoodEntitySorter {
 
-	private List<DbRelationshipSide> relationships;
+	private List<DbRelationshipSide> relationshipSides;
 	protected Map<DbEntity, List<DbRelationshipSide>> reflexiveDbEntities;
 
 
@@ -64,7 +64,7 @@ public class MyAshwoodEntitySorter extends AshwoodEntitySorter {
 		}
 
 		for (DbEntity destination : entityResolver.getDbEntities()) {
-			for (DbRelationshipSide candidate :relationships) {
+			for (DbRelationshipSide candidate : relationshipSides) {
 				if ((!candidate.isToMany() && !candidate.isToDependentPK()) || candidate.isToMasterPK()) {
 					DbEntity origin = candidate.getTargetEntity();
 					final AtomicBoolean newReflexive = new AtomicBoolean(destination.equals(origin));
@@ -134,7 +134,7 @@ public class MyAshwoodEntitySorter extends AshwoodEntitySorter {
 	}
 
 
-	public void setRelationships(List<DbRelationshipSide> relationships) {
-		this.relationships = relationships;
+	public void setRelationshipSides(List<DbRelationshipSide> relationshipSides) {
+		this.relationshipSides = relationshipSides;
 	}
 }
