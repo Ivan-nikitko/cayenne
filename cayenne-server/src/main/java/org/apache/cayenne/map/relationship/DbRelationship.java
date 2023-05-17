@@ -62,7 +62,7 @@ public class DbRelationship implements XMLSerializable, Serializable, Configurat
             dbRelationshipSides[index].setRuntime(true);
             return;
         }
-        srcEntity.addRelationship(dbRelationshipSides[index]);
+       // srcEntity.addRelationship(dbRelationshipSides[index]);
     }
 
     public void setCondition(DbJoin dbJoin) {

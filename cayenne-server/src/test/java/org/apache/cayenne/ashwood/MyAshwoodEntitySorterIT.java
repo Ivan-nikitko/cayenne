@@ -121,13 +121,14 @@ public class MyAshwoodEntitySorterIT extends ServerCase {
             org.apache.cayenne.map.relationship.DbJoin dbJoin = (columnPairs.length == 1)
                     ? new SingleColumnDbJoin(columnPairs[0])
                     : new MultiColumnDbJoin(columnPairs);
+            //TODO toDepPk toMany
 
 
             DbRelationship dbRelationship = new DbRelationshipBuilder()
                     .join(dbJoin)
                     .entities(new String[]{relationship.getSourceEntityName(), relationship.getTargetEntityName()})
                     .names(new String[]{relationship.getReverseRelationship().getName(), relationship.getName()})
-                    .toDepPkSemantics(relationship.isToDependentPK() ? ToDependentPkSemantics.LEFT : ToDependentPkSemantics.RIGHT)
+                    .toDepPkSemantics(relationship.isToDependentPK() ? ToDependentPkSemantics.LEFT : ToDependentPkSemantics.NONE)
                     .toManySemantics(relationship.isToMany() ? ToManySemantics.ONE_TO_MANY : ToManySemantics.ONE_TO_ONE)
                     .dataMap(dataMap)
                     .build();
