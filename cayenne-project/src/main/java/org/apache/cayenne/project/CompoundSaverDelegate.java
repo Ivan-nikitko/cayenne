@@ -33,6 +33,7 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.relationship.DbRelationshipSide;
 import org.apache.cayenne.project.extension.SaverDelegate;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.XMLEncoder;
@@ -160,6 +161,21 @@ class CompoundSaverDelegate implements SaverDelegate {
         for(SaverDelegate delegate : delegates) {
             delegate.visitQuery(query);
         }
+        return null;
+    }
+
+    @Override
+    public Void visitDbJoin(org.apache.cayenne.map.relationship.DbRelationship relationship) {
+        return null;
+    }
+
+    @Override
+    public Void visitDbRelationship(DbRelationshipSide relationship) {
+        return null;
+    }
+
+    @Override
+    public Void visitDbRelationship(org.apache.cayenne.map.relationship.DbRelationship relationship) {
         return null;
     }
 

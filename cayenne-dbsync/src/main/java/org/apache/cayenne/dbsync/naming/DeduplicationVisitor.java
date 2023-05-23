@@ -34,6 +34,7 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.relationship.DbRelationshipSide;
 
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -159,6 +160,21 @@ class DeduplicationVisitor implements ConfigurationNodeVisitor<String> {
     @Override
     public String visitQuery(QueryDescriptor query) {
         return resolve(name -> ((DataMap) parent).getQueryDescriptor(name) != null);
+    }
+
+    @Override
+    public String visitDbJoin(org.apache.cayenne.map.relationship.DbRelationship relationship) {
+        return null;
+    }
+
+    @Override
+    public String visitDbRelationship(DbRelationshipSide relationship) {
+        return null;
+    }
+
+    @Override
+    public String visitDbRelationship(org.apache.cayenne.map.relationship.DbRelationship relationship) {
+        return null;
     }
 
     String resolve(Predicate<String> nameChecker) {

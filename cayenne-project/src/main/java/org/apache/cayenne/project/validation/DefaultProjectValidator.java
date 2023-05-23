@@ -38,6 +38,7 @@ import org.apache.cayenne.map.ProcedureQueryDescriptor;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SQLTemplateDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.map.relationship.DbRelationshipSide;
 import org.apache.cayenne.validation.ValidationResult;
 
 /**
@@ -238,6 +239,21 @@ public class DefaultProjectValidator implements ProjectValidator {
             }
 
             return validationResult;
+        }
+
+        @Override
+        public ValidationResult visitDbJoin(org.apache.cayenne.map.relationship.DbRelationship relationship) {
+            return null;
+        }
+
+        @Override
+        public ValidationResult visitDbRelationship(DbRelationshipSide relationship) {
+            return null;
+        }
+
+        @Override
+        public ValidationResult visitDbRelationship(org.apache.cayenne.map.relationship.DbRelationship relationship) {
+            return null;
         }
     }
 }

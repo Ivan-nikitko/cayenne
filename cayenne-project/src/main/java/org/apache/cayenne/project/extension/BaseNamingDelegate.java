@@ -34,6 +34,7 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.relationship.DbRelationshipSide;
 
 /**
  * @since 4.1
@@ -107,6 +108,21 @@ public class BaseNamingDelegate implements ConfigurationNodeVisitor<String> {
 
     @Override
     public String visitQuery(QueryDescriptor query) {
+        return null;
+    }
+
+    @Override
+    public String visitDbJoin(org.apache.cayenne.map.relationship.DbRelationship relationship) {
+        return null;
+    }
+
+    @Override
+    public String visitDbRelationship(DbRelationshipSide relationship) {
+        return null;
+    }
+
+    @Override
+    public String visitDbRelationship(org.apache.cayenne.map.relationship.DbRelationship relationship) {
         return null;
     }
 }
