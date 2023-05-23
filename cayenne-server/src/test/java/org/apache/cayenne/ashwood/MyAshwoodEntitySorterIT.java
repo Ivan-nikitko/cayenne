@@ -74,7 +74,6 @@ public class MyAshwoodEntitySorterIT extends ServerCase {
 
         sorter.setEntityResolver(resolver);
 
-
         this.artist = resolver.getDbEntity("ARTIST");
         this.artistExhibit = resolver.getDbEntity("ARTIST_EXHIBIT");
         this.exhibit = resolver.getDbEntity("EXHIBIT");
@@ -121,15 +120,16 @@ public class MyAshwoodEntitySorterIT extends ServerCase {
             org.apache.cayenne.map.relationship.DbJoin dbJoin = (columnPairs.length == 1)
                     ? new SingleColumnDbJoin(columnPairs[0])
                     : new MultiColumnDbJoin(columnPairs);
-            //TODO toDepPk toMany
 
+            ToDependentPkSemantics toDepPkSemantics = calculateToDepPkSemantics(relationship);
+            ToManySemantics toManySemantics = calculateToManySemantics(relationship);
 
             DbRelationship dbRelationship = new DbRelationshipBuilder()
                     .join(dbJoin)
                     .entities(new String[]{relationship.getSourceEntityName(), relationship.getTargetEntityName()})
                     .names(new String[]{relationship.getReverseRelationship().getName(), relationship.getName()})
-                    .toDepPkSemantics(relationship.isToDependentPK() ? ToDependentPkSemantics.LEFT : ToDependentPkSemantics.NONE)
-                    .toManySemantics(relationship.isToMany() ? ToManySemantics.ONE_TO_MANY : ToManySemantics.ONE_TO_ONE)
+                    .toDepPkSemantics(toDepPkSemantics)
+                    .toManySemantics(toManySemantics)
                     .dataMap(dataMap)
                     .build();
 
@@ -139,6 +139,29 @@ public class MyAshwoodEntitySorterIT extends ServerCase {
             dbRelationshipSides.add(dbRelationship.getRelationshipSide().getReverseRelationshipSide());
         }
         return dbRelationshipSides;
+    }
+
+    private ToManySemantics calculateToManySemantics(org.apache.cayenne.map.DbRelationship relationship) {
+        boolean isToMany = relationship.isToMany();
+        boolean isReverseToMany = relationship.getReverseRelationship().isToMany();
+
+        if (isToMany && isReverseToMany) {
+            return ToManySemantics.MANY_TO_MANY;
+        } else if (isToMany) {
+            return ToManySemantics.MANY_TO_ONE;
+        } else if (isReverseToMany) {
+            return ToManySemantics.ONE_TO_MANY;
+        } else {
+            return ToManySemantics.ONE_TO_ONE;
+        }
+    }
+
+    private ToDependentPkSemantics calculateToDepPkSemantics(org.apache.cayenne.map.DbRelationship relationship) {
+
+        if (relationship.isToPK() && relationship.getReverseRelationship().isToPK()) {
+            return ToDependentPkSemantics.RIGHT;
+        }
+        return ToDependentPkSemantics.NONE;
     }
 
 }
