@@ -64,15 +64,11 @@ public class MyAshwoodEntitySorterIT extends ServerCase {
 
     private List<DbEntity> entities;
 
-    private DbRelationshipSide[] relationshipSides;
-
-
     @Before
     public void before() {
 
 
         this.sorter = new MyAshwoodEntitySorter();
-        //  prepareRelationships();
 
         sorter.setEntityResolver(resolver);
 
@@ -83,13 +79,7 @@ public class MyAshwoodEntitySorterIT extends ServerCase {
         this.painting = resolver.getDbEntity("PAINTING");
         this.paintingInfo = resolver.getDbEntity("PAINTING_INFO");
 
-
         this.entities = Arrays.asList(artist, artistExhibit, exhibit, gallery, painting, paintingInfo);
-        Map<DbEntity, List<DbRelationshipSide>> dbEntityRelationshipSidesMap = new HashMap<>();
-        for (DbEntity entity : entities) {
-            dbEntityRelationshipSidesMap.put(entity, convertDbRelationships(entity));
-        }
-        sorter.setDbEntityRelationshipSidesMap(dbEntityRelationshipSidesMap);
     }
 
     @Test
@@ -105,46 +95,5 @@ public class MyAshwoodEntitySorterIT extends ServerCase {
         assertTrue(entities.indexOf(exhibit) < entities.indexOf(artistExhibit));
         assertTrue(entities.indexOf(painting) < entities.indexOf(paintingInfo));
     }
-
-    private List<DbRelationshipSide> convertDbRelationships(DbEntity entity) {
-        Collection<org.apache.cayenne.map.DbRelationship> relationships = entity.getRelationships();
-        List<DbRelationshipSide> dbRelationshipSides = new ArrayList<>(relationships.size());
-
-        for (org.apache.cayenne.map.DbRelationship relationship : relationships) {
-
-            DataMap dataMap = relationship.getSourceEntity().getDataMap();
-
-            List<DbJoin> joins = relationship.getJoins();
-
-            ColumnPair[] columnPairs = joins.stream()
-                    .map(join -> new ColumnPair(join.getSourceName(), join.getTargetName()))
-                    .toArray(ColumnPair[]::new);
-
-            org.apache.cayenne.map.relationship.DbJoin dbJoin = (columnPairs.length == 1)
-                    ? new SingleColumnDbJoin(columnPairs[0])
-                    : new MultiColumnDbJoin(columnPairs);
-
-            ToDependentPkSemantics toDepPkSemantics = ToDependentPkSemantics.getSemantics(relationship.isToDependentPK(),
-                    relationship.getReverseRelationship().isToDependentPK());
-            ToManySemantics toManySemantics = ToManySemantics.getSemantics(relationship.isToMany(),
-                    relationship.getReverseRelationship().isToMany());
-
-            DbRelationship dbRelationship = new DbRelationshipBuilder()
-                    .join(dbJoin)
-                    .entities(new String[]{relationship.getSourceEntityName(), relationship.getTargetEntityName()})
-                    .names(new String[]{relationship.getReverseRelationship().getName(), relationship.getName()})
-                    .toDepPkSemantics(toDepPkSemantics)
-                    .toManySemantics(toManySemantics)
-                    .dataMap(dataMap)
-                    .build();
-
-            dbRelationship.compile(dataMap);
-
-            dbRelationshipSides.add(dbRelationship.getRelationshipSide());
-            dbRelationshipSides.add(dbRelationship.getRelationshipSide().getReverseRelationshipSide());
-        }
-        return dbRelationshipSides;
-    }
-
 
 }

@@ -23,10 +23,19 @@ import org.apache.cayenne.ashwood.graph.Digraph;
 import org.apache.cayenne.ashwood.graph.IndegreeTopologicalSort;
 import org.apache.cayenne.ashwood.graph.MapDigraph;
 import org.apache.cayenne.ashwood.graph.StrongConnection;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbJoin;
+import org.apache.cayenne.map.relationship.ColumnPair;
+import org.apache.cayenne.map.relationship.DbRelationship;
+import org.apache.cayenne.map.relationship.DbRelationshipBuilder;
 import org.apache.cayenne.map.relationship.DbRelationshipSide;
 import org.apache.cayenne.map.relationship.DirectionalJoinVisitor;
+import org.apache.cayenne.map.relationship.MultiColumnDbJoin;
+import org.apache.cayenne.map.relationship.SingleColumnDbJoin;
+import org.apache.cayenne.map.relationship.ToDependentPkSemantics;
+import org.apache.cayenne.map.relationship.ToManySemantics;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,9 +53,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class MyAshwoodEntitySorter extends AshwoodEntitySorter {
 
-    private List<DbRelationshipSide> relationshipSides;
-
-    private Map<DbEntity, List<DbRelationshipSide>> dbEntityRelationshipSidesMap;
     protected Map<DbEntity, List<DbRelationshipSide>> reflexiveDbEntities;
 
 
@@ -65,8 +71,9 @@ public class MyAshwoodEntitySorter extends AshwoodEntitySorter {
             }
         }
 
+        Map<DbEntity, List<DbRelationshipSide>> dbEntityRelationshipSidesMap = getEntityRelationshipSideMap();
+
         for (DbEntity destination : entityResolver.getDbEntities()) {
-            if (dbEntityRelationshipSidesMap.containsKey(destination)) {
                 for (DbRelationshipSide candidate : dbEntityRelationshipSidesMap.get(destination)) {
                     if ((!candidate.isToMany() && !candidate.isToDependentPK()) || candidate.isToMasterPK()) {
                         DbEntity origin = candidate.getTargetEntity();
@@ -110,7 +117,6 @@ public class MyAshwoodEntitySorter extends AshwoodEntitySorter {
                             }
                         });
                     }
-                }
             }
         }
 
@@ -137,14 +143,55 @@ public class MyAshwoodEntitySorter extends AshwoodEntitySorter {
         this.components = components;
     }
 
-
-    public void setRelationshipSides(List<DbRelationshipSide> relationshipSides) {
-        this.relationshipSides = relationshipSides;
+    private Map<DbEntity, List<DbRelationshipSide>> getEntityRelationshipSideMap() {
+        Map<DbEntity, List<DbRelationshipSide>> dbEntityRelationshipSidesMap = new HashMap<>();
+        for (DbEntity entity : entityResolver.getDbEntities()) {
+            dbEntityRelationshipSidesMap.put(entity, convertEntityDbRelationships(entity));
+        }
+        return dbEntityRelationshipSidesMap;
     }
 
-    public void setDbEntityRelationshipSidesMap(Map<DbEntity, List<DbRelationshipSide>> dbEntityRelationshipSidesMap) {
-        this.dbEntityRelationshipSidesMap = dbEntityRelationshipSidesMap;
+
+    private List<DbRelationshipSide> convertEntityDbRelationships(DbEntity entity) {
+        Collection<org.apache.cayenne.map.DbRelationship> relationships = entity.getRelationships();
+        List<DbRelationshipSide> dbRelationshipSides = new ArrayList<>(relationships.size());
+
+        for (org.apache.cayenne.map.DbRelationship relationship : relationships) {
+
+            DataMap dataMap = relationship.getSourceEntity().getDataMap();
+
+            List<DbJoin> joins = relationship.getJoins();
+
+            ColumnPair[] columnPairs = joins.stream()
+                    .map(join -> new ColumnPair(join.getSourceName(), join.getTargetName()))
+                    .toArray(ColumnPair[]::new);
+
+            org.apache.cayenne.map.relationship.DbJoin dbJoin = (columnPairs.length == 1)
+                    ? new SingleColumnDbJoin(columnPairs[0])
+                    : new MultiColumnDbJoin(columnPairs);
+
+            ToDependentPkSemantics toDepPkSemantics = ToDependentPkSemantics.getSemantics(relationship.isToDependentPK(),
+                    relationship.getReverseRelationship().isToDependentPK());
+            ToManySemantics toManySemantics = ToManySemantics.getSemantics(relationship.isToMany(),
+                    relationship.getReverseRelationship().isToMany());
+
+            DbRelationship dbRelationship = new DbRelationshipBuilder()
+                    .join(dbJoin)
+                    .entities(new String[]{relationship.getSourceEntityName(), relationship.getTargetEntityName()})
+                    .names(new String[]{relationship.getReverseRelationship().getName(), relationship.getName()})
+                    .toDepPkSemantics(toDepPkSemantics)
+                    .toManySemantics(toManySemantics)
+                    .dataMap(dataMap)
+                    .build();
+
+            dbRelationship.compile(dataMap);
+
+            dbRelationshipSides.add(dbRelationship.getRelationshipSide());
+            dbRelationshipSides.add(dbRelationship.getRelationshipSide().getReverseRelationshipSide());
+        }
+        return dbRelationshipSides;
     }
+
 
 
 }
