@@ -39,102 +39,112 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Implements dependency sorting algorithms for ObjEntities, DbEntities and
  * DataObjects. Presently it works for acyclic database schemas with possible
  * multi-reflexive tables.
- * 
+ *
  * @since 3.1
  */
 public class MyAshwoodEntitySorter extends AshwoodEntitySorter {
 
-	private List<DbRelationshipSide> relationshipSides;
-	protected Map<DbEntity, List<DbRelationshipSide>> reflexiveDbEntities;
+    private List<DbRelationshipSide> relationshipSides;
+
+    private Map<DbEntity, List<DbRelationshipSide>> dbEntityRelationshipSidesMap;
+    protected Map<DbEntity, List<DbRelationshipSide>> reflexiveDbEntities;
 
 
-@Override
-	/**
-	 * Reindexes internal sorter without synchronization.
-	 */
-	protected void doIndexSorter() {
+    @Override
+    /**
+     * Reindexes internal sorter without synchronization.
+     */
+    protected void doIndexSorter() {
 
-		Map<DbEntity, List<DbRelationshipSide>> reflexiveDbEntities = new HashMap<>();
-		Digraph<DbEntity, List<DbAttribute>> referentialDigraph = new MapDigraph<>();
+        Map<DbEntity, List<DbRelationshipSide>> reflexiveDbEntities = new HashMap<>();
+        Digraph<DbEntity, List<DbAttribute>> referentialDigraph = new MapDigraph<>();
 
-		if (entityResolver != null) {
-			for (DbEntity entity : entityResolver.getDbEntities()) {
-				referentialDigraph.addVertex(entity);
-			}
-		}
+        if (entityResolver != null) {
+            for (DbEntity entity : entityResolver.getDbEntities()) {
+                referentialDigraph.addVertex(entity);
+            }
+        }
 
-		for (DbEntity destination : entityResolver.getDbEntities()) {
-			for (DbRelationshipSide candidate : relationshipSides) {
-				if ((!candidate.isToMany() && !candidate.isToDependentPK()) || candidate.isToMasterPK()) {
-					DbEntity origin = candidate.getTargetEntity();
-					final AtomicBoolean newReflexive = new AtomicBoolean(destination.equals(origin));
-					candidate.accept(new DirectionalJoinVisitor<Void>() {
+        for (DbEntity destination : entityResolver.getDbEntities()) {
+            if (dbEntityRelationshipSidesMap.containsKey(destination)) {
+                for (DbRelationshipSide candidate : dbEntityRelationshipSidesMap.get(destination)) {
+                    if ((!candidate.isToMany() && !candidate.isToDependentPK()) || candidate.isToMasterPK()) {
+                        DbEntity origin = candidate.getTargetEntity();
+                        final AtomicBoolean newReflexive = new AtomicBoolean(destination.equals(origin));
+                        candidate.accept(new DirectionalJoinVisitor<Void>() {
 
-						private void build(DbAttribute target) {
-							if (target.isPrimaryKey()) {
+                            private void build(DbAttribute target) {
+                                if (target.isPrimaryKey()) {
 
-								if (newReflexive.get()) {
-									List<DbRelationshipSide> reflexiveRels = reflexiveDbEntities
-											.computeIfAbsent(destination, k ->
-													new ArrayList<>(1));
-									reflexiveRels.add(candidate);
-									newReflexive.set(false);
-								}
+                                    if (newReflexive.get()) {
+                                        List<DbRelationshipSide> reflexiveRels = reflexiveDbEntities
+                                                .computeIfAbsent(destination, k ->
+                                                        new ArrayList<>(1));
+                                        reflexiveRels.add(candidate);
+                                        newReflexive.set(false);
+                                    }
 
-								List<DbAttribute> fks = referentialDigraph.getArc(origin, destination);
-								if (fks == null) {
-									fks = new ArrayList<>();
-									referentialDigraph.putArc(origin, destination, fks);
-								}
+                                    List<DbAttribute> fks = referentialDigraph.getArc(origin, destination);
+                                    if (fks == null) {
+                                        fks = new ArrayList<>();
+                                        referentialDigraph.putArc(origin, destination, fks);
+                                    }
 
-								fks.add(target);
-							}
-						}
+                                    fks.add(target);
+                                }
+                            }
 
-						@Override
-						public Void visit(DbAttribute[] source, DbAttribute[] target) {
-							int length = source.length;
-							for(int i = 0; i < length; i++) {
-								build(target[i]);
-							}
-							return null;
-						}
+                            @Override
+                            public Void visit(DbAttribute[] source, DbAttribute[] target) {
+                                int length = source.length;
+                                for (int i = 0; i < length; i++) {
+                                    build(target[i]);
+                                }
+                                return null;
+                            }
 
-						@Override
-						public Void visit(DbAttribute source, DbAttribute target) {
-							build(target);
-							return null;
-						}
-					});
-				}
-			}
-		}
+                            @Override
+                            public Void visit(DbAttribute source, DbAttribute target) {
+                                build(target);
+                                return null;
+                            }
+                        });
+                    }
+                }
+            }
+        }
 
-		StrongConnection<DbEntity, List<DbAttribute>> contractor = new StrongConnection<>(referentialDigraph);
+        StrongConnection<DbEntity, List<DbAttribute>> contractor = new StrongConnection<>(referentialDigraph);
 
-		Digraph<Collection<DbEntity>, Collection<List<DbAttribute>>> contractedReferentialDigraph = new MapDigraph<>();
-		contractor.contract(contractedReferentialDigraph);
+        Digraph<Collection<DbEntity>, Collection<List<DbAttribute>>> contractedReferentialDigraph = new MapDigraph<>();
+        contractor.contract(contractedReferentialDigraph);
 
-		IndegreeTopologicalSort<Collection<DbEntity>> sorter = new IndegreeTopologicalSort<>(
-				contractedReferentialDigraph);
+        IndegreeTopologicalSort<Collection<DbEntity>> sorter = new IndegreeTopologicalSort<>(
+                contractedReferentialDigraph);
 
-		Map<DbEntity, MyAshwoodEntitySorter.ComponentRecord> components = new HashMap<>(contractedReferentialDigraph.order());
-		int componentIndex = 0;
-		while (sorter.hasNext()) {
-			Collection<DbEntity> component = sorter.next();
-			MyAshwoodEntitySorter.ComponentRecord rec = new MyAshwoodEntitySorter.ComponentRecord(componentIndex++, component);
+        Map<DbEntity, MyAshwoodEntitySorter.ComponentRecord> components = new HashMap<>(contractedReferentialDigraph.order());
+        int componentIndex = 0;
+        while (sorter.hasNext()) {
+            Collection<DbEntity> component = sorter.next();
+            MyAshwoodEntitySorter.ComponentRecord rec = new MyAshwoodEntitySorter.ComponentRecord(componentIndex++, component);
 
-			for (DbEntity table : component) {
-				components.put(table, rec);
-			}
-		}
+            for (DbEntity table : component) {
+                components.put(table, rec);
+            }
+        }
 
-		this.reflexiveDbEntities = reflexiveDbEntities;
-		this.components = components;
-	}
+        this.reflexiveDbEntities = reflexiveDbEntities;
+        this.components = components;
+    }
 
 
-	public void setRelationshipSides(List<DbRelationshipSide> relationshipSides) {
-		this.relationshipSides = relationshipSides;
-	}
+    public void setRelationshipSides(List<DbRelationshipSide> relationshipSides) {
+        this.relationshipSides = relationshipSides;
+    }
+
+    public void setDbEntityRelationshipSidesMap(Map<DbEntity, List<DbRelationshipSide>> dbEntityRelationshipSidesMap) {
+        this.dbEntityRelationshipSidesMap = dbEntityRelationshipSidesMap;
+    }
+
+
 }
