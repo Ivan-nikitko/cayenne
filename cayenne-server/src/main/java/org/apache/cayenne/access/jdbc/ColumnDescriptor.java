@@ -50,6 +50,7 @@ public class ColumnDescriptor {
 
     protected int jdbcType;
     protected String javaClass;
+    protected String alias;
 
     /**
      * @since 4.0
@@ -246,6 +247,14 @@ public class ColumnDescriptor {
 
     public String getJavaClass() {
         return javaClass;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
+    public String getAlias() {
+        return alias;
     }
 
     public void setJavaClass(String string) {
