@@ -23,10 +23,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.DataRow;
+import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.CapsStrategy;
+import org.apache.cayenne.query.SQLSelect;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -38,6 +41,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test for Result directive to check if we could use ResultDirective
@@ -50,11 +54,16 @@ public class ResultDirectiveIT extends ServerCase {
 	private ServerRuntime runtime;
 
 	@Inject
+	protected DataContext context;
+
+	@Inject
 	protected DBHelper dbHelper;
 
 	@Before
 	public void before() throws SQLException {
 		new TableHelper(dbHelper, "ARTIST").setColumns("ARTIST_ID", "ARTIST_NAME").insert(1l, "ArtistToTestResult");
+		new TableHelper(dbHelper, "GALLERY").setColumns("GALLERY_ID", "GALLERY_NAME").insert(1, "Uffizi Gallery");
+
 	}
 
 	@Test
@@ -94,6 +103,32 @@ public class ResultDirectiveIT extends ServerCase {
 
 		assertEquals(1l, selectResult.get("ARTIST_ID"));
 		assertEquals("ArtistToTestResult", selectResult.get("ARTIST_NAME"));
+	}
+
+	@Test
+	public void testWithMixedDirectiveUse3() throws Exception {
+		List<DataRow> dataRows = SQLSelect.dataRowQuery("SELECT "
+						+ "GALLERY_ID, "
+						+ "#result('t0.GALLERY_ID'  'double' 'ALIAS', 'KEY'), "
+						+ "#result('t0.GALLERY_ID'  'long'), "
+						+ "GALLERY_NAME "
+						+ "FROM GALLERY t0 LIMIT 1 OFFSET 0")
+				.select(context);
+
+		DataRow dataRow = dataRows.get(0);
+		assertEquals(4, dataRow.size());
+
+		assertTrue(dataRow.get("GALLERY_ID") instanceof Integer);
+		assertEquals(1,dataRow.get("GALLERY_ID"));
+
+		assertTrue(dataRow.get("KEY") instanceof Double);
+		assertEquals(1.0,dataRow.get("KEY"));
+
+		assertTrue(dataRow.get("t0.GALLERY_ID") instanceof Long);
+		assertEquals(1L,dataRow.get("t0.GALLERY_ID"));
+
+		assertTrue(dataRow.get("GALLERY_NAME") instanceof String);
+		assertEquals("Uffizi Gallery",dataRow.get("GALLERY_NAME"));
 	}
 
 	private Map<String, Object> selectForQuery(String sql) {

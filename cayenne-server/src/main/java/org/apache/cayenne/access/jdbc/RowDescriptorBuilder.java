@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -120,13 +121,22 @@ public class RowDescriptorBuilder {
             uniqueNames = new HashSet<>();
         }
 
+
+        Set<ColumnDescriptor> descriptorsSet = new HashSet<>();
+        if (!mergeColumnsWithRsMetadata && columns != null) {
+            Collections.addAll(descriptorsSet, columns);
+        }
+
         int outputLen = 0;
         for (int i = 0; i < rsLen; i++) {
-            String rowkey = resolveDataRowKeyFromResultSet(i + 1);
-            
-            // resolve column descriptor from 'columns' or create new
-            ColumnDescriptor descriptor = getColumnDescriptor(rowkey, columns, i + 1);
+            String rowKey = resolveDataRowKeyFromResultSet(i + 1);
 
+            ColumnDescriptor descriptor;
+            if (mergeColumnsWithRsMetadata) {
+                descriptor = new ColumnDescriptor(rowKey, resultSetMetadata.getColumnType(i + 1), columns[i].getJavaClass());
+            } else {
+                descriptor = getColumnDescriptor(rowKey, i, descriptorsSet);
+            }
             // validate uniqueness of names
             if(validateDuplicateColumnNames) {
                 if(!uniqueNames.add(descriptor.getDataRowKey())) {
@@ -143,44 +153,66 @@ public class RowDescriptorBuilder {
         }
 
         if (outputLen < rsLen) {
-            // cut ColumnDescriptor array
-            ColumnDescriptor[] rsColumnsCut = new ColumnDescriptor[outputLen];
-            System.arraycopy(rsColumns, 0, rsColumnsCut, 0, outputLen);
-            return rsColumnsCut;
+            return cutColumns(rsColumns, outputLen);
         }
-
         return rsColumns;
     }
 
     /**
-     * @return ColumnDescriptor from columnArray, if columnArray contains descriptor for
+     * @return ColumnDescriptor from descriptorsSet, if descriptorsSet contains descriptor for
      *         this column, or new ColumnDescriptor.
      */
     private ColumnDescriptor getColumnDescriptor(
             String rowKey,
-            ColumnDescriptor[] columnArray,
-            int position) throws SQLException {
-        int len = (columnArray != null) ? columnArray.length : 0;
-        // go through columnArray to find ColumnDescriptor for specified column
-        for (int i = 0; i < len; i++) {
-            if (columnArray[i] != null) {
-                if(mergeColumnsWithRsMetadata) {
-                    return new ColumnDescriptor(rowKey, resultSetMetadata.getColumnType(position), columnArray[position - 1].getJavaClass());
-                } else {
-                    String columnRowKey = columnArray[i].getDataRowKey();
+            int position,
+            Set<ColumnDescriptor> descriptorsSet) throws SQLException {
 
-                    // TODO: andrus, 10/14/2009 - 'equalsIgnoreCase' check can result in
-                    // subtle bugs in DBs with case-sensitive column names (or when quotes are
-                    // used to force case sensitivity). Alternatively using 'equals' may miss
-                    // columns in case-insensitive situations.
-                    if (columnRowKey != null && columnRowKey.equalsIgnoreCase(rowKey)) {
-                        return columnArray[i];
+        if (rowKey != null && !descriptorsSet.isEmpty()) {
+            ColumnDescriptor columnDescriptor = findColumnDescriptor(rowKey, descriptorsSet);
+            if (columnDescriptor != null) {
+                descriptorsSet.remove(columnDescriptor);
+                return columnDescriptor;
+            }
+        }
+        // descriptorsSet doesn't contain ColumnDescriptor for specified column
+        return new ColumnDescriptor(rowKey, resultSetMetadata, position +1 );
+    }
+
+    private ColumnDescriptor[] cutColumns(ColumnDescriptor[] rsColumns, int outputLen) {
+        ColumnDescriptor[] rsColumnsCut = new ColumnDescriptor[outputLen];
+        System.arraycopy(rsColumns, 0, rsColumnsCut, 0, outputLen);
+        return rsColumnsCut;
+    }
+
+    private ColumnDescriptor findColumnDescriptor(String rowKey, Set<ColumnDescriptor> descriptorsSet) {
+        for (ColumnDescriptor columnDescriptor : descriptorsSet) {
+            if (columnDescriptor != null) {
+                String alias = columnDescriptor.getAlias();
+                if (alias != null) {
+                    if (alias.equals(rowKey)) {
+                        return columnDescriptor;
+                    }
+                } else {
+                    String normalizedColumnName = removePrefix(columnDescriptor.getName());
+                    if (normalizedColumnName != null && normalizedColumnName.equalsIgnoreCase(rowKey)) {
+                        return columnDescriptor;
                     }
                 }
             }
         }
-        // columnArray doesn't contain ColumnDescriptor for specified column
-        return new ColumnDescriptor(rowKey, resultSetMetadata, position);
+        return null;
+    }
+
+
+    private String removePrefix(String descriptorName) {
+        if (descriptorName == null){
+            return null;
+        }
+        int dotIndex = descriptorName.indexOf('.');
+        if (dotIndex >= 0) {
+            return descriptorName.substring(dotIndex + 1);
+        }
+        return descriptorName;
     }
 
     /**
@@ -252,6 +284,7 @@ public class RowDescriptorBuilder {
 
     /**
      * Validate and report duplicate names of columns.
+     *
      * @return this builder
      */
     public RowDescriptorBuilder validateDuplicateColumnNames() {

@@ -88,6 +88,7 @@ public class Result implements Directive {
         String alias = null;
         if (expressions.length > 2) {
             alias = expressions[2].evaluateAsString(context);
+            columnDescriptor.setAlias(alias);
         }
 
         String dataRowKey = null;
